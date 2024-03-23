@@ -1,6 +1,6 @@
 import React from "react";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { cn } from "../lib/utils";
+import { buttonVariants } from "../components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export const Login = () => {

@@ -6,12 +6,17 @@
     "checkJs": true,
     "strict": true,
     "esModuleInterop": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
+    "rootDir": "./",
+    // "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Recommended"
 }

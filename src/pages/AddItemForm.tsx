@@ -52,6 +52,12 @@ interface Room {
   name: string;
 }
 
+interface Item {
+  id: number;
+  item_name: string;
+  serial_num: string;
+}
+
 const RoomOptions = () => {
   const [roomOptions, setRoomOptions] = useState<Room[]>([]);
 
@@ -72,6 +78,33 @@ const RoomOptions = () => {
       {roomOptions.map((option) => (
         <SelectItem key={option.id} value={option.id.toString()}>
           {option.name}
+        </SelectItem>
+      ))}
+    </>
+  );
+};
+
+const ItemOptions = () => {
+  const [itemOptions, setItemOptions] = useState<Item[]>([]);
+
+  useEffect(() => {
+    const getItems = async () => {
+      try {
+        const allItems = await axios.get(`${BACKEND_URL}/allitems/`);
+        setItemOptions(allItems.data);
+        console.log(allItems.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getItems();
+  }, []);
+
+  return (
+    <>
+      {itemOptions.map((option) => (
+        <SelectItem key={option.id} value={option.serial_num}>
+          {option.item_name}
         </SelectItem>
       ))}
     </>
@@ -150,7 +183,7 @@ export const AddItemForm = () => {
               />
             </div>
             {/* TEXT INPUT BOX */}
-            <div className="sm:col-start-3 sm:col-span-4">
+            {/* <div className="sm:col-start-3 sm:col-span-4">
               <FormField
                 control={form.control}
                 name="materialCode"
@@ -167,8 +200,8 @@ export const AddItemForm = () => {
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="sm:col-start-3 sm:col-span-4">
+            </div> */}
+            {/* <div className="sm:col-start-3 sm:col-span-4">
               <FormField
                 control={form.control}
                 name="itemName"
@@ -179,6 +212,36 @@ export const AddItemForm = () => {
                       <Input placeholder="Type here" {...field} />
                     </FormControl>
                     <FormDescription>Type the item name.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div> */}
+            <div className="sm:col-start-3 sm:col-span-4">
+              <FormField
+                control={form.control}
+                name="itemName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Item</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an item to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* Select Item Component */}
+                        <ItemOptions />
+                      </SelectContent>
+                    </Select>
+
+                    <FormDescription>
+                      Select the item that you want to transact.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -283,7 +346,7 @@ export const AddItemForm = () => {
             </div>
             <div className="mt-6 sm:col-start-4 sm:col-span-2">
               <Button type="submit" size={"full"}>
-                Submit
+                Add to cart
               </Button>
             </div>
           </form>

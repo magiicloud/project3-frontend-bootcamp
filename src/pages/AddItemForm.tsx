@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { Calendar } from "../components/ui/calendar";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { z } from "zod";
 import {
   Popover,
@@ -34,17 +35,16 @@ import {
 } from "../components/ui/select";
 
 const formSchema = z.object({
-  materialCode: z
-    .string()
-    .min(3, "Material code must be at least 3 characters long"),
+  type: z.enum(["add", "count", "move"], {
+    required_error: "You need to select a transaction type.",
+  }),
+  materialCode: z.string().min(1, "Material code cannot be blank"),
   itemName: z.string().min(1, "Item name cannot be blank"),
   quantity: z.number().min(1, "Quantity cannot be blank"),
   expiryDate: z.date({
-    required_error: "A date of birth is required.",
+    required_error: "An expiry date is required.",
   }),
-  roomSelect: z.string({
-    required_error: "Please select a room to display.",
-  }),
+  roomSelect: z.string().min(1, "Please select a room to display."),
 });
 
 interface Room {
@@ -99,12 +99,56 @@ export const AddItemForm = () => {
   return (
     <>
       <div className="prose flex flex-col p-6 max-w-full">
-        <h1 className="text-center">Add Item</h1>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="pb-8 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-8"
           >
+            <h1 className="sm:col-start-3 sm:col-span-4">Manage Items</h1>
+            <div className="mb-3 sm:col-start-3 sm:col-span-4">
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Choose transaction type...</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-3"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="add" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Add new item
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="count" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Cycle count
+                          </FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="move" />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            Item movement
+                          </FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             {/* TEXT INPUT BOX */}
             <div className="sm:col-start-3 sm:col-span-4">
               <FormField

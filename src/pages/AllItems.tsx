@@ -16,6 +16,17 @@ interface Item {
   serial_num: string;
   item_name: string;
   par_level: number;
+  roomItems: {
+    id: number;
+    room_id: number;
+    item_id: number;
+    quantity: number;
+    uom: string;
+    expiry_date: Date;
+    room: {
+      name: string;
+    };
+  }[];
 }
 
 export const AllItems = () => {
@@ -44,6 +55,8 @@ export const AllItems = () => {
                 <TableHead>Serial No.</TableHead>
                 <TableHead>Item Name</TableHead>
                 <TableHead>Par Level</TableHead>
+                <TableHead>Room</TableHead>
+                <TableHead>Room Quantity</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -52,6 +65,18 @@ export const AllItems = () => {
                   <TableCell>{item.serial_num}</TableCell>
                   <TableCell>{item.item_name}</TableCell>
                   <TableCell>{item.par_level}</TableCell>
+                  <TableCell>
+                    {item.roomItems.map((roomItem) => (
+                      <p key={roomItem.id}>{roomItem.room.name}</p>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    {item.roomItems.map((roomItem) => (
+                      <p key={roomItem.id}>
+                        {roomItem.quantity} {roomItem.uom}
+                      </p>
+                    ))}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

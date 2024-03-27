@@ -41,9 +41,9 @@
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.2",
     "next-themes": "^0.3.0",
-    "react": "^18.1.0",
+    "react": "^18.2.0",
     "react-day-picker": "^8.10.0",
-    "react-dom": "^18.1.0",
+    "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.1",
     "react-resizable-panels": "^2.0.13",
     "react-router-dom": "^6.22.3",
@@ -52,12 +52,14 @@
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "^3.4.1",
     "tailwindcss-animate": "^1.0.7",
+    "typescript": "^4.9.5",
     "vaul": "^0.9.0",
     "zod": "^3.22.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build"
+    "start": "PORT=3001 react-scripts start",
+    "build": "react-scripts build",
+    "clean": "npx tsc --build --clean"
   },
   "eslintConfig": {
     "extends": [
@@ -82,7 +84,6 @@
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.69",
     "@types/react-dom": "^18.2.22",
-    "@types/trusted-types": "^2.0.7",
-    "typescript": "^5.4.3"
+    "@types/trusted-types": "^2.0.7"
   }
 }

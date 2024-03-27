@@ -5,6 +5,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { RoomPicture } from "./pages/RoomPicture";
 import { Room } from "./pages/Room";
 import { AllItems } from "./pages/AllItems";
+import { AddItemForm } from "./pages/AddItemForm";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/roompicture" element={<RoomPicture />} />
         <Route path="/room" element={<Room />} />
         <Route path="/allitems" element={<AllItems />} />
+        <Route path="/additemform" element={<AddItemForm />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, MouseEventHandler } from "react";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";
 import RectangleSelection from "./rectangle-select";
@@ -11,6 +11,10 @@ import {
   DialogTitle,
   DialogDescription,
 } from "./ui/dialog";
+import { Button } from "./ui/button";
+
+import { storage } from "../firebase";
+import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 interface newRoom {
   topLeft: number[];
@@ -19,23 +23,16 @@ interface newRoom {
   name: string;
 }
 
-interface building {
+interface floorplan {
   height: number;
   width: number;
   image: string | ArrayBuffer | null;
 }
 
-type buildings = building;
+type floorplans = floorplan;
 type rooms = newRoom[];
 
 export const NewFloorplan = () => {
-  const [origin, setOrigin] = useState([0, 0]);
-  const [target, setTarget] = useState([0, 0]);
-  const [limit, setLimit] = useState([
-    [0, 0],
-    [0, 0],
-    [0, 0],
-  ]);
   const [rooms, setRooms] = useState<rooms>([]);
   const [newBox, setNewBox] = useState({
     topLeft: [-1, -1],
@@ -43,11 +40,15 @@ export const NewFloorplan = () => {
     height: -1,
   });
   const [newRoomName, setNewRoomName] = useState("");
-  const [building, setBuilding] = useState<buildings>({
+  const [floorplan, setFloorplan] = useState<floorplans>({
     height: 0,
     width: 0,
     image: "",
   });
+  const [floorplanImg, setFloorplanImg] = useState<any>(undefined);
+  const [floorplanName, setFloorplanName] = useState<string>("");
+  const [mainDialog, setMainDialog] = useState<boolean>(false);
+  const [successDialog, setSuccessDialog] = useState<boolean>(false);
 
   const handleClick = () => {
     const newRooms = [...rooms];
@@ -67,22 +68,26 @@ export const NewFloorplan = () => {
     setter(e.target.value);
   };
 
+  const handleSuccess = () => {
+    setMainDialog(false);
+    setSuccessDialog(false);
+  };
+
   const parentWidth = (elem: HTMLElement | null) => {
     return elem?.parentElement?.clientWidth;
   };
 
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setFloorplanImg(file);
     const image = new Image();
     image.onload = () => {
-      console.log(image.width, image.height);
-      const newBuilding = { ...building };
+      const newBuilding = { ...floorplan };
       const parentEleWidth = parentWidth(
         document.getElementById("floorplan-highlight")
       );
       let imageWidth = 0;
       if (parentEleWidth) imageWidth = parentEleWidth - 10;
-      console.log(imageWidth);
       // const imageWidth = window.innerWidth - 200;
       newBuilding.height = (image.height * imageWidth) / image.width;
       newBuilding.width = imageWidth;
@@ -91,7 +96,7 @@ export const NewFloorplan = () => {
       if (file) reader.readAsDataURL(file);
       reader.onloadend = () => {
         newBuilding.image = reader.result;
-        setBuilding(newBuilding);
+        setFloorplan(newBuilding);
       };
     };
     if (file) image.src = URL.createObjectURL(file);
@@ -145,14 +150,24 @@ export const NewFloorplan = () => {
     }
   };
 
-  const img = {
-    height: building.height,
-    width: building.width,
-    url: "https://media.licdn.com/dms/image/C5603AQHdnuerzA9i5A/profile-displayphoto-shrink_400_400/0/1635394928434?e=1717027200&v=beta&t=Aw4YRksXsmLtC3B1NQ77Ky2EnWPm2b3Mi03l3yF0cfQ",
+  const createNewFloorplan = (imageUrl: string) => {
+    console.log(imageUrl);
+    setSuccessDialog(true);
   };
+
+  const uploadImage: MouseEventHandler<HTMLButtonElement> = () => {
+    const floorplanImgRef = sRef(storage, `/floorplans/${floorplanName}`);
+    uploadBytes(floorplanImgRef, floorplanImg).then(() => {
+      const url = getDownloadURL(floorplanImgRef);
+      url.then((value) => {
+        createNewFloorplan(value);
+      });
+    });
+  };
+
   return (
     <>
-      <Dialog>
+      <Dialog open={mainDialog} onOpenChange={setMainDialog}>
         <DialogTrigger>Add new floorplan</DialogTrigger>
         <DialogContent
           style={{
@@ -167,13 +182,20 @@ export const NewFloorplan = () => {
               Highlight areas of the image and input the name to preview the new
               room. Click "Add" to add the room.
             </DialogDescription>
-            <input type="file" onChange={(e) => handleFile(e)}></input>
+            <label className="inline">Floorplan Image:</label>
+            <input
+              className="inline"
+              type="file"
+              onChange={(e) => handleFile(e)}
+            ></input>
+            <label className="inline">Floorplan Name:</label>
+            <input
+              type="text"
+              onChange={(e) => handleChange(e, setFloorplanName)}
+            ></input>
             <RectangleSelection
               id="floorplan-highlight"
               onSelect={(e, coords) => {
-                setOrigin(coords.origin);
-                setTarget(coords.target);
-                setLimit(coords.limit);
                 setNewBox({
                   topLeft: coords.topLeft,
                   width: coords.width,
@@ -185,10 +207,10 @@ export const NewFloorplan = () => {
               <div
                 className="relative bg-cover bg-no-repeatrelative bg-cover bg-no-repeat"
                 style={{
-                  height: building.height,
-                  width: building.width,
+                  height: floorplan.height,
+                  width: floorplan.width,
                   backgroundColor: "black",
-                  backgroundImage: `url(${building.image})`,
+                  backgroundImage: `url(${floorplan.image})`,
                 }}
               >
                 {roomDivs}
@@ -200,8 +222,19 @@ export const NewFloorplan = () => {
               value={newRoomName}
               onChange={(e) => handleChange(e, setNewRoomName)}
             ></input>
-            <button onClick={handleClick}>Add</button>
+            <button onClick={handleClick}>Add room</button>
+            <button onClick={uploadImage}>Create new floorplan</button>
           </DialogHeader>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={successDialog} onOpenChange={setSuccessDialog}>
+        <DialogContent className="w-[50%]">
+          <DialogTitle>Success!</DialogTitle>
+          <DialogDescription>
+            The new floorplan has been recorded, close this dialog and head to
+            the main page to view the new floorplan!
+          </DialogDescription>
+          <Button onClick={handleSuccess}>Close</Button>
         </DialogContent>
       </Dialog>
     </>

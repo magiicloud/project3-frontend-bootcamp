@@ -7,7 +7,7 @@ export const Floorplans = () => {
   return (
     <>
       <div className="prose">
-        <h1>Floorplans</h1>
+        <h1>FLOORPLANS</h1>
         <NewFloorplan />
       </div>
     </>

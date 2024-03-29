@@ -33,19 +33,16 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
   ]);
 
   const closeSelectionBox = () => {
-    document.body.style.overflow = "";
     setHold(false);
     setSelectionBox(false);
   };
 
   const handleTouchDown = (e: React.TouchEvent<HTMLDivElement>) => {
     if (props.disabled) return;
-    let doubleClick = false;
     setSelectionBox(false);
 
     if ((e.target as HTMLDivElement).id === "react-rectangle-selection") {
       setSelectionBox(false);
-      doubleClick = true;
     }
 
     const target = e.touches[0].target as HTMLDivElement;
@@ -71,12 +68,10 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     if (props.disabled) return;
-    let doubleClick = false;
     setSelectionBox(false);
 
     if ((e.target as HTMLDivElement).id === "react-rectangle-selection") {
       setSelectionBox(false);
-      doubleClick = true;
     }
 
     const target = e.nativeEvent.target as HTMLDivElement;
@@ -128,7 +123,7 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
 
   return (
     <div
-      style={{ height: "inherit", width: "inherit" }}
+      style={{ height: "inherit", width: "inherit", touchAction: "none" }}
       onTouchStart={(e) => handleTouchDown(e)}
       onTouchEnd={() => {
         closeSelectionBox();
@@ -161,7 +156,6 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
       }}
       // for touchscreen
       onTouchMove={(evt) => {
-        document.body.style.overflow = "hidden";
         if (hold && !selectionBox) {
           if (props.onTouchStart) props.onTouchStart();
           setSelectionBox(true);

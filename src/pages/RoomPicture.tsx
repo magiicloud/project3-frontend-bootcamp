@@ -3,6 +3,14 @@ import { cn } from "../lib/utils";
 import { buttonVariants } from "../components/ui/button";
 import RectangleSelection from "../components/rectangle-select";
 import { ChangeEvent } from "react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "../components/ui/dialog";
 
 interface newRoom {
   topLeft: number[];
@@ -59,13 +67,23 @@ export const RoomPicture = () => {
     setter(e.target.value);
   };
 
+  const parentWidth = (elem: HTMLElement | null) => {
+    return elem?.parentElement?.clientWidth;
+  };
+
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     const image = new Image();
     image.onload = () => {
       console.log(image.width, image.height);
       const newBuilding = { ...building };
-      const imageWidth = window.innerWidth - 200;
+      const parentEleWidth = parentWidth(
+        document.getElementById("floorplan-highlight")
+      );
+      let imageWidth = 0;
+      if (parentEleWidth) imageWidth = parentEleWidth - 10;
+      console.log(imageWidth);
+      // const imageWidth = window.innerWidth - 200;
       newBuilding.height = (image.height * imageWidth) / image.width;
       newBuilding.width = imageWidth;
 
@@ -125,42 +143,58 @@ export const RoomPicture = () => {
     <>
       <div className="prose">
         <h1>FLOORPLAN</h1>
-        <p>To test the image select idea</p>
-        <input type="file" onChange={(e) => handleFile(e)}></input>
-        <span>{origin + " , " + target + " , " + limit}</span>
-        <span>{[newBox.topLeft, newBox.width, newBox.height]}</span>
-        <RectangleSelection
-          onSelect={(e, coords) => {
-            setOrigin(coords.origin);
-            setTarget(coords.target);
-            setLimit(coords.limit);
-            setNewBox({
-              topLeft: coords.topLeft,
-              width: coords.width,
-              height: coords.height,
-            });
-          }}
-          style={{ backgroundColor: "grey", borderColor: "black" }}
-        >
-          <div
-            className="relative bg-cover bg-no-repeatrelative bg-cover bg-no-repeat"
+        <Dialog>
+          <DialogTrigger>Add new floorplan</DialogTrigger>
+          <DialogContent
             style={{
-              height: building.height,
-              width: building.width,
-              backgroundColor: "black",
-              backgroundImage: `url(${building.image})`,
+              overflowY: "auto",
+              overflowX: "hidden",
+              maxHeight: "100%",
             }}
           >
-            {roomDivs}
-            {boxInProg()}
-          </div>
-        </RectangleSelection>
-        <label>Room Name: </label>
-        <input
-          value={newRoomName}
-          onChange={(e) => handleChange(e, setNewRoomName)}
-        ></input>
-        <button onClick={handleClick}>ok</button>
+            <DialogHeader>
+              <DialogTitle>New Floorplan</DialogTitle>
+              <DialogDescription>
+                Highlight areas of the image and input the name to preview the
+                new room. Click "Add" to add the room.
+              </DialogDescription>
+              <input type="file" onChange={(e) => handleFile(e)}></input>
+              <RectangleSelection
+                id="floorplan-highlight"
+                onSelect={(e, coords) => {
+                  setOrigin(coords.origin);
+                  setTarget(coords.target);
+                  setLimit(coords.limit);
+                  setNewBox({
+                    topLeft: coords.topLeft,
+                    width: coords.width,
+                    height: coords.height,
+                  });
+                }}
+                style={{ backgroundColor: "grey", borderColor: "black" }}
+              >
+                <div
+                  className="relative bg-cover bg-no-repeatrelative bg-cover bg-no-repeat"
+                  style={{
+                    height: building.height,
+                    width: building.width,
+                    backgroundColor: "black",
+                    backgroundImage: `url(${building.image})`,
+                  }}
+                >
+                  {roomDivs}
+                  {boxInProg()}
+                </div>
+              </RectangleSelection>
+              <label>Room Name: </label>
+              <input
+                value={newRoomName}
+                onChange={(e) => handleChange(e, setNewRoomName)}
+              ></input>
+              <button onClick={handleClick}>Add</button>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </>
   );

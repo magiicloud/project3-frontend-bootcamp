@@ -10,6 +10,7 @@ interface SelectionBoxProps {
     params: SelectionParams
   ) => void;
   style?: React.CSSProperties;
+  id?: string;
 }
 
 interface SelectionParams {
@@ -96,14 +97,18 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
   };
 
   const calculateRoomDivParams = () => {
+    const elem = document.getElementById(props.id ?? "");
+    var viewportOffset = elem?.getBoundingClientRect();
+    console.log(viewportOffset);
+
     const leftPercent =
       ((Math.min(selectionBoxOrigin[0], selectionBoxTarget[0]) -
-        selectionBoxLimit[0][0]) *
+        (viewportOffset?.left ?? 0)) *
         100) /
       selectionBoxLimit[2][0];
     const topPercent =
       ((Math.min(selectionBoxOrigin[1], selectionBoxTarget[1]) -
-        selectionBoxLimit[0][1]) *
+        (viewportOffset?.top ?? 0)) *
         100) /
       selectionBoxLimit[2][1];
 
@@ -123,6 +128,7 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
 
   return (
     <div
+      id={props.id}
       style={{ height: "inherit", width: "inherit", touchAction: "none" }}
       onTouchStart={(e) => handleTouchDown(e)}
       onTouchEnd={() => {
@@ -161,11 +167,14 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
           setSelectionBox(true);
         }
         if (selectionBox) {
+          const elem = document.getElementById(props.id ?? "");
+          var viewportOffset = elem?.getBoundingClientRect();
+          console.log(viewportOffset);
           const touchLeave =
-            evt.touches[0].pageX < selectionBoxLimit[0][0] ||
-            evt.touches[0].pageX > selectionBoxLimit[1][0] ||
-            evt.touches[0].pageY < selectionBoxLimit[0][1] ||
-            evt.touches[0].pageY > selectionBoxLimit[1][1];
+            evt.touches[0].pageX < (viewportOffset?.left ?? 0) ||
+            evt.touches[0].pageX > (viewportOffset?.right ?? 0) ||
+            evt.touches[0].pageY < (viewportOffset?.top ?? 0) ||
+            evt.touches[0].pageY > (viewportOffset?.bottom ?? 0);
 
           if (touchLeave) {
             closeSelectionBox();

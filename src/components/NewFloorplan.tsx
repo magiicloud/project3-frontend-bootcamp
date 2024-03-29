@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { cn } from "../lib/utils";
-import { buttonVariants } from "../components/ui/button";
-import RectangleSelection from "../components/rectangle-select";
+import { buttonVariants } from "./ui/button";
+import RectangleSelection from "./rectangle-select";
 import { ChangeEvent } from "react";
 import {
   Dialog,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "../components/ui/dialog";
+} from "./ui/dialog";
 
 interface newRoom {
   topLeft: number[];
@@ -28,7 +28,7 @@ interface building {
 type buildings = building;
 type rooms = newRoom[];
 
-export const RoomPicture = () => {
+export const NewFloorplan = () => {
   const [origin, setOrigin] = useState([0, 0]);
   const [target, setTarget] = useState([0, 0]);
   const [limit, setLimit] = useState([
@@ -152,61 +152,58 @@ export const RoomPicture = () => {
   };
   return (
     <>
-      <div className="prose">
-        <h1>FLOORPLAN</h1>
-        <Dialog>
-          <DialogTrigger>Add new floorplan</DialogTrigger>
-          <DialogContent
-            style={{
-              overflowY: "auto",
-              overflowX: "hidden",
-              maxHeight: "100%",
-            }}
-          >
-            <DialogHeader>
-              <DialogTitle>New Floorplan</DialogTitle>
-              <DialogDescription>
-                Highlight areas of the image and input the name to preview the
-                new room. Click "Add" to add the room.
-              </DialogDescription>
-              <input type="file" onChange={(e) => handleFile(e)}></input>
-              <RectangleSelection
-                id="floorplan-highlight"
-                onSelect={(e, coords) => {
-                  setOrigin(coords.origin);
-                  setTarget(coords.target);
-                  setLimit(coords.limit);
-                  setNewBox({
-                    topLeft: coords.topLeft,
-                    width: coords.width,
-                    height: coords.height,
-                  });
+      <Dialog>
+        <DialogTrigger>Add new floorplan</DialogTrigger>
+        <DialogContent
+          style={{
+            overflowY: "auto",
+            overflowX: "hidden",
+            maxHeight: "100%",
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>New Floorplan</DialogTitle>
+            <DialogDescription>
+              Highlight areas of the image and input the name to preview the new
+              room. Click "Add" to add the room.
+            </DialogDescription>
+            <input type="file" onChange={(e) => handleFile(e)}></input>
+            <RectangleSelection
+              id="floorplan-highlight"
+              onSelect={(e, coords) => {
+                setOrigin(coords.origin);
+                setTarget(coords.target);
+                setLimit(coords.limit);
+                setNewBox({
+                  topLeft: coords.topLeft,
+                  width: coords.width,
+                  height: coords.height,
+                });
+              }}
+              style={{ backgroundColor: "grey", borderColor: "black" }}
+            >
+              <div
+                className="relative bg-cover bg-no-repeatrelative bg-cover bg-no-repeat"
+                style={{
+                  height: building.height,
+                  width: building.width,
+                  backgroundColor: "black",
+                  backgroundImage: `url(${building.image})`,
                 }}
-                style={{ backgroundColor: "grey", borderColor: "black" }}
               >
-                <div
-                  className="relative bg-cover bg-no-repeatrelative bg-cover bg-no-repeat"
-                  style={{
-                    height: building.height,
-                    width: building.width,
-                    backgroundColor: "black",
-                    backgroundImage: `url(${building.image})`,
-                  }}
-                >
-                  {roomDivs}
-                  {boxInProg()}
-                </div>
-              </RectangleSelection>
-              <label>Room Name: </label>
-              <input
-                value={newRoomName}
-                onChange={(e) => handleChange(e, setNewRoomName)}
-              ></input>
-              <button onClick={handleClick}>Add</button>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      </div>
+                {roomDivs}
+                {boxInProg()}
+              </div>
+            </RectangleSelection>
+            <label>Room Name: </label>
+            <input
+              value={newRoomName}
+              onChange={(e) => handleChange(e, setNewRoomName)}
+            ></input>
+            <button onClick={handleClick}>Add</button>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

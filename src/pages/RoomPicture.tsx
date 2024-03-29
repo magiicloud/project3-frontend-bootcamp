@@ -100,7 +100,7 @@ export const RoomPicture = () => {
   const roomDivs = rooms.map((room, index) => (
     <div
       key={index}
-      className="absolute z-10 bg-gray-500 border-2 border-black"
+      className="absolute"
       style={Object.assign({
         zIndex: 10,
         left: room.topLeft[0] + "%",
@@ -110,7 +110,10 @@ export const RoomPicture = () => {
         userSelect: "none",
       })}
     >
-      {room.name}
+      <div className="z-10 absolute flex justify-center items-center border-2 border-black rounded w-full h-full">
+        <div className="w-inherit text-center">{room.name}</div>
+      </div>
+      <div className="z-9 bg-gray-500 opacity-50 w-full h-full"></div>
     </div>
   ));
 
@@ -118,7 +121,7 @@ export const RoomPicture = () => {
     if (newBox.height > 0) {
       return (
         <div
-          className="absolute z-10 bg-gray-500 border-2 border-black"
+          className="absolute"
           style={Object.assign({
             zIndex: 10,
             left: newBox.topLeft[0] + "%",
@@ -128,7 +131,15 @@ export const RoomPicture = () => {
             userSelect: "none",
           })}
         >
-          {newRoomName}
+          <div className="z-10 absolute flex justify-center items-center border-2 border-black rounded w-full h-full">
+            <div
+              className="whitespace-normal text-center"
+              style={{ maxWidth: "100%" }}
+            >
+              {newRoomName}
+            </div>
+          </div>
+          <div className="z-9 bg-gray-500 opacity-70 w-full h-full"></div>
         </div>
       );
     }

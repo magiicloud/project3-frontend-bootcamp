@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "../components/ui/button";
-import { NewFloorplan } from "../components/NewFloorplan";
+import { NewBuilding } from "../components/NewBuilding";
 
-export const Floorplans = () => {
+export const Buildings = () => {
   return (
     <>
       <div className="prose">
-        <h1>FLOORPLANS</h1>
-        <NewFloorplan />
+        <h1>BUILDINGS</h1>
+        <NewBuilding />
       </div>
     </>
   );

@@ -23,16 +23,16 @@ interface newRoom {
   name: string;
 }
 
-interface floorplan {
+interface building {
   height: number;
   width: number;
   image: string | ArrayBuffer | null;
 }
 
-type floorplans = floorplan;
+type buildings = building;
 type rooms = newRoom[];
 
-export const NewFloorplan = () => {
+export const NewBuilding = () => {
   const [rooms, setRooms] = useState<rooms>([]);
   const [newBox, setNewBox] = useState({
     topLeft: [-1, -1],
@@ -40,13 +40,13 @@ export const NewFloorplan = () => {
     height: -1,
   });
   const [newRoomName, setNewRoomName] = useState("");
-  const [floorplan, setFloorplan] = useState<floorplans>({
+  const [building, setBuilding] = useState<buildings>({
     height: 0,
     width: 0,
     image: "",
   });
-  const [floorplanImg, setFloorplanImg] = useState<any>(undefined);
-  const [floorplanName, setFloorplanName] = useState<string>("");
+  const [buildingImg, setBuildingImg] = useState<any>(undefined);
+  const [buildingName, setBuildingName] = useState<string>("");
   const [mainDialog, setMainDialog] = useState<boolean>(false);
   const [successDialog, setSuccessDialog] = useState<boolean>(false);
 
@@ -79,12 +79,12 @@ export const NewFloorplan = () => {
 
   const handleFile = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setFloorplanImg(file);
+    setBuildingImg(file);
     const image = new Image();
     image.onload = () => {
-      const newBuilding = { ...floorplan };
+      const newBuilding = { ...building };
       const parentEleWidth = parentWidth(
-        document.getElementById("floorplan-highlight")
+        document.getElementById("building-highlight")
       );
       let imageWidth = 0;
       if (parentEleWidth) imageWidth = parentEleWidth - 10;
@@ -96,7 +96,7 @@ export const NewFloorplan = () => {
       if (file) reader.readAsDataURL(file);
       reader.onloadend = () => {
         newBuilding.image = reader.result;
-        setFloorplan(newBuilding);
+        setBuilding(newBuilding);
       };
     };
     if (file) image.src = URL.createObjectURL(file);
@@ -156,8 +156,8 @@ export const NewFloorplan = () => {
   };
 
   const uploadImage: MouseEventHandler<HTMLButtonElement> = () => {
-    const floorplanImgRef = sRef(storage, `/floorplans/${floorplanName}`);
-    uploadBytes(floorplanImgRef, floorplanImg).then(() => {
+    const floorplanImgRef = sRef(storage, `/buildings/${buildingName}`);
+    uploadBytes(floorplanImgRef, buildingImg).then(() => {
       const url = getDownloadURL(floorplanImgRef);
       url.then((value) => {
         createNewFloorplan(value);
@@ -168,7 +168,7 @@ export const NewFloorplan = () => {
   return (
     <>
       <Dialog open={mainDialog} onOpenChange={setMainDialog}>
-        <DialogTrigger>Add new floorplan</DialogTrigger>
+        <DialogTrigger>Add new building</DialogTrigger>
         <DialogContent
           style={{
             overflowY: "auto",
@@ -177,24 +177,24 @@ export const NewFloorplan = () => {
           }}
         >
           <DialogHeader>
-            <DialogTitle>New Floorplan</DialogTitle>
+            <DialogTitle>New Building</DialogTitle>
             <DialogDescription>
               Highlight areas of the image and input the name to preview the new
               room. Click "Add" to add the room.
             </DialogDescription>
-            <label className="inline">Floorplan Image:</label>
+            <label className="inline">Building Image:</label>
             <input
               className="inline"
               type="file"
               onChange={(e) => handleFile(e)}
             ></input>
-            <label className="inline">Floorplan Name:</label>
+            <label className="inline">Building Name:</label>
             <input
               type="text"
-              onChange={(e) => handleChange(e, setFloorplanName)}
+              onChange={(e) => handleChange(e, setBuildingName)}
             ></input>
             <RectangleSelection
-              id="floorplan-highlight"
+              id="building-highlight"
               onSelect={(e, coords) => {
                 setNewBox({
                   topLeft: coords.topLeft,
@@ -207,10 +207,10 @@ export const NewFloorplan = () => {
               <div
                 className="relative bg-cover bg-no-repeatrelative bg-cover bg-no-repeat"
                 style={{
-                  height: floorplan.height,
-                  width: floorplan.width,
+                  height: building.height,
+                  width: building.width,
                   backgroundColor: "black",
-                  backgroundImage: `url(${floorplan.image})`,
+                  backgroundImage: `url(${building.image})`,
                 }}
               >
                 {roomDivs}
@@ -223,7 +223,7 @@ export const NewFloorplan = () => {
               onChange={(e) => handleChange(e, setNewRoomName)}
             ></input>
             <button onClick={handleClick}>Add room</button>
-            <button onClick={uploadImage}>Create new floorplan</button>
+            <button onClick={uploadImage}>Create new building</button>
           </DialogHeader>
         </DialogContent>
       </Dialog>
@@ -231,8 +231,8 @@ export const NewFloorplan = () => {
         <DialogContent className="w-[50%]">
           <DialogTitle>Success!</DialogTitle>
           <DialogDescription>
-            The new floorplan has been recorded, close this dialog and head to
-            the main page to view the new floorplan!
+            The new building has been recorded, close this dialog and head to
+            the main page to view the new building!
           </DialogDescription>
           <Button onClick={handleSuccess}>Close</Button>
         </DialogContent>

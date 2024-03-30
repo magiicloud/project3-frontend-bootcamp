@@ -99,7 +99,6 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
   const calculateRoomDivParams = () => {
     const elem = document.getElementById(props.id ?? "");
     var viewportOffset = elem?.getBoundingClientRect();
-    console.log(viewportOffset);
 
     const leftPercent =
       ((Math.min(selectionBoxOrigin[0], selectionBoxTarget[0]) -

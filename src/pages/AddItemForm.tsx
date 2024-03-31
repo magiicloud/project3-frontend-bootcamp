@@ -38,9 +38,9 @@ const formSchema = z.object({
   type: z.enum(["add", "count", "move"], {
     required_error: "You need to select a transaction type.",
   }),
-  materialCode: z.string().min(1, "Material code cannot be blank"),
+  serialNum: z.string().min(1, "Serial number cannot be blank"),
   itemName: z.string().min(1, "Item name cannot be blank"),
-  quantity: z.number().min(1, "Quantity cannot be blank"),
+  quantity: z.string().min(1, "Quantity cannot be blank"),
   expiryDate: z.date({
     required_error: "An expiry date is required.",
   }),
@@ -58,34 +58,9 @@ interface Item {
   serial_num: string;
 }
 
-const RoomOptions = () => {
-  const [roomOptions, setRoomOptions] = useState<Room[]>([]);
-
-  useEffect(() => {
-    const getRooms = async () => {
-      try {
-        const allRooms = await axios.get(`${BACKEND_URL}/allitems/`);
-        setRoomOptions(allRooms.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getRooms();
-  }, []);
-
-  return (
-    <>
-      {roomOptions.map((option) => (
-        <SelectItem key={option.id} value={option.id.toString()}>
-          {option.name}
-        </SelectItem>
-      ))}
-    </>
-  );
-};
-
 export const AddItemForm = () => {
   const [itemOptions, setItemOptions] = useState<Item[]>([]);
+  const [roomOptions, setRoomOptions] = useState<Room[]>([]);
 
   const getItems = async () => {
     try {
@@ -96,26 +71,41 @@ export const AddItemForm = () => {
     }
   };
 
+  const getRooms = async () => {
+    try {
+      const allRooms = await axios.get(`${BACKEND_URL}/allrooms/`);
+      setRoomOptions(allRooms.data);
+      console.log(allRooms.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     getItems();
+    getRooms();
   }, []);
 
   // Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      materialCode: "",
+      serialNum: "",
       itemName: "",
-      quantity: 0,
+      quantity: "",
       roomSelect: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    console.log(formData);
+    try {
+      const response = await axios.put(`${BACKEND_URL}/updateitem`, formData);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error searching backend:", error);
+    }
+  };
 
   const searchWithSerialNum = async (serialNum: string) => {
     try {
@@ -125,7 +115,10 @@ export const AddItemForm = () => {
       console.log(response.data);
       form.setValue("itemName", response.data.serial_num);
       form.setValue("quantity", response.data.roomItems[0].quantity);
-      form.setValue("expiryDate", response.data.roomItems[0].expiry_date);
+      form.setValue(
+        "expiryDate",
+        new Date(response.data.roomItems[0].expiry_date)
+      );
     } catch (error) {
       console.error("Error searching backend:", error);
     }
@@ -188,10 +181,10 @@ export const AddItemForm = () => {
             <div className="sm:col-start-3 sm:col-span-4">
               <FormField
                 control={form.control}
-                name="materialCode"
+                name="serialNum"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Material Code</FormLabel>
+                    <FormLabel>Serial Number</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Type or scan here"
@@ -203,7 +196,7 @@ export const AddItemForm = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      Type or scan the material code.
+                      Type or scan the serialNume.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -220,7 +213,7 @@ export const AddItemForm = () => {
                     <Select
                       onValueChange={(selectedItem) => {
                         field.onChange(selectedItem);
-                        form.setValue("materialCode", selectedItem);
+                        form.setValue("serialNum", selectedItem);
                         searchWithSerialNum(selectedItem);
                       }}
                       value={field.value}
@@ -256,7 +249,7 @@ export const AddItemForm = () => {
                   <FormItem>
                     <FormLabel>Quantity</FormLabel>
                     <FormControl>
-                      <Input placeholder="Type here" {...field} />
+                      <Input placeholder="Type here" {...field} type="number" />
                     </FormControl>
                     <FormDescription>
                       Quantity of item in location.
@@ -285,7 +278,14 @@ export const AddItemForm = () => {
                       </FormControl>
                       <SelectContent>
                         {/* Select Room Component */}
-                        <RoomOptions />
+                        {roomOptions.map((option) => (
+                          <SelectItem
+                            key={option.id}
+                            value={option.id.toString()}
+                          >
+                            {option.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -331,7 +331,7 @@ export const AddItemForm = () => {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
+                            date < new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
                         />

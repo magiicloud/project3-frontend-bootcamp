@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { BACKEND_URL } from "../constants";
 import axios from "axios";
@@ -40,11 +40,11 @@ const formSchema = z.object({
   }),
   serialNum: z.string().min(1, "Serial number cannot be blank"),
   itemName: z.string().min(1, "Item name cannot be blank"),
-  quantity: z.string().min(1, "Quantity cannot be blank"),
+  quantity: z.coerce.number().min(1, "Quantity cannot be blank"),
   expiryDate: z.date({
     required_error: "An expiry date is required.",
   }),
-  roomSelect: z.string().min(1, "Please select a room to display."),
+  roomSelect: z.coerce.number().min(1, "Please select a room to display."),
 });
 
 interface Room {
@@ -92,8 +92,8 @@ export const AddItemForm = () => {
     defaultValues: {
       serialNum: "",
       itemName: "",
-      quantity: "",
-      roomSelect: "",
+      quantity: 0,
+      roomSelect: 0,
     },
   });
 
@@ -102,6 +102,16 @@ export const AddItemForm = () => {
     try {
       const response = await axios.put(`${BACKEND_URL}/updateitem`, formData);
       console.log(response.data);
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(formData, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
     } catch (error) {
       console.error("Error searching backend:", error);
     }
@@ -196,7 +206,7 @@ export const AddItemForm = () => {
                       />
                     </FormControl>
                     <FormDescription>
-                      Type or scan the serialNume.
+                      Type or scan the serial number.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -269,7 +279,7 @@ export const AddItemForm = () => {
                     <FormLabel>Select Room</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={field.value.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>

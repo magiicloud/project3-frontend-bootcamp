@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { BACKEND_URL } from "../constants";
 import axios from "axios";
@@ -64,7 +64,7 @@ const RoomOptions = () => {
   useEffect(() => {
     const getRooms = async () => {
       try {
-        const allRooms = await axios.get(`${BACKEND_URL}/rooms/`);
+        const allRooms = await axios.get(`${BACKEND_URL}/allitems/`);
         setRoomOptions(allRooms.data);
       } catch (error) {
         console.error(error);
@@ -84,34 +84,22 @@ const RoomOptions = () => {
   );
 };
 
-const ItemOptions = () => {
+export const AddItemForm = () => {
   const [itemOptions, setItemOptions] = useState<Item[]>([]);
 
+  const getItems = async () => {
+    try {
+      const allItems = await axios.get(`${BACKEND_URL}/allitems/`);
+      setItemOptions(allItems.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const getItems = async () => {
-      try {
-        const allItems = await axios.get(`${BACKEND_URL}/allitems/`);
-        setItemOptions(allItems.data);
-        console.log(allItems.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     getItems();
   }, []);
 
-  return (
-    <>
-      {itemOptions.map((option) => (
-        <SelectItem key={option.id} value={option.serial_num}>
-          {option.item_name}
-        </SelectItem>
-      ))}
-    </>
-  );
-};
-
-export const AddItemForm = () => {
   // Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -128,6 +116,22 @@ export const AddItemForm = () => {
     // ✅ This will be type-safe and validated.
     console.log(values);
   }
+
+  const searchWithSerialNum = async (e: ChangeEvent<HTMLInputElement>) => {
+    const serialNum = e.target.value;
+
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/findserial/${serialNum}/1`
+      );
+      console.log(response.data);
+      form.setValue("itemName", response.data.serial_num);
+      form.setValue("quantity", response.data.roomItems[0].quantity);
+      form.setValue("expiryDate", response.data.roomItems[0].expiry_date);
+    } catch (error) {
+      console.error("Error searching backend:", error);
+    }
+  };
 
   return (
     <>
@@ -183,7 +187,7 @@ export const AddItemForm = () => {
               />
             </div>
             {/* TEXT INPUT BOX */}
-            {/* <div className="sm:col-start-3 sm:col-span-4">
+            <div className="sm:col-start-3 sm:col-span-4">
               <FormField
                 control={form.control}
                 name="materialCode"
@@ -191,7 +195,14 @@ export const AddItemForm = () => {
                   <FormItem>
                     <FormLabel>Material Code</FormLabel>
                     <FormControl>
-                      <Input placeholder="Type or scan here" {...field} />
+                      <Input
+                        placeholder="Type or scan here"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          searchWithSerialNum(e);
+                        }}
+                      />
                     </FormControl>
                     <FormDescription>
                       Type or scan the material code.
@@ -200,23 +211,7 @@ export const AddItemForm = () => {
                   </FormItem>
                 )}
               />
-            </div> */}
-            {/* <div className="sm:col-start-3 sm:col-span-4">
-              <FormField
-                control={form.control}
-                name="itemName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Item Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Type here" {...field} />
-                    </FormControl>
-                    <FormDescription>Type the item name.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div> */}
+            </div>
             <div className="sm:col-start-3 sm:col-span-4">
               <FormField
                 control={form.control}
@@ -225,8 +220,11 @@ export const AddItemForm = () => {
                   <FormItem>
                     <FormLabel>Select Item</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(selectedItem) => {
+                        field.onChange(selectedItem);
+                        form.setValue("materialCode", selectedItem);
+                      }}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -234,8 +232,12 @@ export const AddItemForm = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {/* Select Item Component */}
-                        <ItemOptions />
+                        {/* Select Item Options */}
+                        {itemOptions.map((option) => (
+                          <SelectItem key={option.id} value={option.serial_num}>
+                            {option.item_name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 

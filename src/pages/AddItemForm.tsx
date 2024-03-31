@@ -38,13 +38,13 @@ const formSchema = z.object({
   type: z.enum(["add", "count", "move"], {
     required_error: "You need to select a transaction type.",
   }),
-  materialCode: z.string().min(1, "Material code cannot be blank"),
+  serialNum: z.string().min(1, "Serial number cannot be blank"),
   itemName: z.string().min(1, "Item name cannot be blank"),
-  quantity: z.number().min(1, "Quantity cannot be blank"),
+  quantity: z.coerce.number().min(1, "Quantity cannot be blank"),
   expiryDate: z.date({
     required_error: "An expiry date is required.",
   }),
-  roomSelect: z.string().min(1, "Please select a room to display."),
+  roomSelect: z.coerce.number().min(1, "Please select a room to display."),
 });
 
 interface Room {
@@ -58,76 +58,81 @@ interface Item {
   serial_num: string;
 }
 
-const RoomOptions = () => {
+export const AddItemForm = () => {
+  const [itemOptions, setItemOptions] = useState<Item[]>([]);
   const [roomOptions, setRoomOptions] = useState<Room[]>([]);
 
+  const getItems = async () => {
+    try {
+      const allItems = await axios.get(`${BACKEND_URL}/allitems/`);
+      setItemOptions(allItems.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getRooms = async () => {
+    try {
+      const allRooms = await axios.get(`${BACKEND_URL}/allrooms/`);
+      setRoomOptions(allRooms.data);
+      console.log(allRooms.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const getRooms = async () => {
-      try {
-        const allRooms = await axios.get(`${BACKEND_URL}/rooms/`);
-        setRoomOptions(allRooms.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    getItems();
     getRooms();
   }, []);
 
-  return (
-    <>
-      {roomOptions.map((option) => (
-        <SelectItem key={option.id} value={option.id.toString()}>
-          {option.name}
-        </SelectItem>
-      ))}
-    </>
-  );
-};
-
-const ItemOptions = () => {
-  const [itemOptions, setItemOptions] = useState<Item[]>([]);
-
-  useEffect(() => {
-    const getItems = async () => {
-      try {
-        const allItems = await axios.get(`${BACKEND_URL}/allitems/`);
-        setItemOptions(allItems.data);
-        console.log(allItems.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getItems();
-  }, []);
-
-  return (
-    <>
-      {itemOptions.map((option) => (
-        <SelectItem key={option.id} value={option.serial_num}>
-          {option.item_name}
-        </SelectItem>
-      ))}
-    </>
-  );
-};
-
-export const AddItemForm = () => {
   // Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      materialCode: "",
+      serialNum: "",
       itemName: "",
       quantity: 0,
-      roomSelect: "",
+      roomSelect: 0,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    console.log(formData);
+    try {
+      const response = await axios.put(`${BACKEND_URL}/updateitem`, formData);
+      console.log(response.data);
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(formData, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+    } catch (error) {
+      console.error("Error searching backend:", error);
+    }
+  };
+
+  const searchWithSerialNum = async (serialNum: string) => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/findserial/${serialNum}/1`
+      );
+      console.log(response.data);
+      form.setValue("itemName", response.data.serial_num);
+      form.setValue("quantity", response.data.roomItems[0].quantity);
+      form.setValue(
+        "expiryDate",
+        new Date(response.data.roomItems[0].expiry_date)
+      );
+    } catch (error) {
+      console.error("Error searching backend:", error);
+    }
+  };
 
   return (
     <>
@@ -183,40 +188,31 @@ export const AddItemForm = () => {
               />
             </div>
             {/* TEXT INPUT BOX */}
-            {/* <div className="sm:col-start-3 sm:col-span-4">
+            <div className="sm:col-start-3 sm:col-span-4">
               <FormField
                 control={form.control}
-                name="materialCode"
+                name="serialNum"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Material Code</FormLabel>
+                    <FormLabel>Serial Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="Type or scan here" {...field} />
+                      <Input
+                        placeholder="Type or scan here"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          searchWithSerialNum(e.target.value);
+                        }}
+                      />
                     </FormControl>
                     <FormDescription>
-                      Type or scan the material code.
+                      Type or scan the serial number.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div> */}
-            {/* <div className="sm:col-start-3 sm:col-span-4">
-              <FormField
-                control={form.control}
-                name="itemName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Item Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Type here" {...field} />
-                    </FormControl>
-                    <FormDescription>Type the item name.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div> */}
+            </div>
             <div className="sm:col-start-3 sm:col-span-4">
               <FormField
                 control={form.control}
@@ -225,8 +221,12 @@ export const AddItemForm = () => {
                   <FormItem>
                     <FormLabel>Select Item</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(selectedItem) => {
+                        field.onChange(selectedItem);
+                        form.setValue("serialNum", selectedItem);
+                        searchWithSerialNum(selectedItem);
+                      }}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -234,8 +234,12 @@ export const AddItemForm = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {/* Select Item Component */}
-                        <ItemOptions />
+                        {/* Select Item Options */}
+                        {itemOptions.map((option) => (
+                          <SelectItem key={option.id} value={option.serial_num}>
+                            {option.item_name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -255,7 +259,7 @@ export const AddItemForm = () => {
                   <FormItem>
                     <FormLabel>Quantity</FormLabel>
                     <FormControl>
-                      <Input placeholder="Type here" {...field} />
+                      <Input placeholder="Type here" {...field} type="number" />
                     </FormControl>
                     <FormDescription>
                       Quantity of item in location.
@@ -275,7 +279,7 @@ export const AddItemForm = () => {
                     <FormLabel>Select Room</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={field.value.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -284,7 +288,14 @@ export const AddItemForm = () => {
                       </FormControl>
                       <SelectContent>
                         {/* Select Room Component */}
-                        <RoomOptions />
+                        {roomOptions.map((option) => (
+                          <SelectItem
+                            key={option.id}
+                            value={option.id.toString()}
+                          >
+                            {option.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -330,7 +341,7 @@ export const AddItemForm = () => {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
+                            date < new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
                         />

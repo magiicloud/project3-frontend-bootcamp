@@ -117,9 +117,7 @@ export const AddItemForm = () => {
     console.log(values);
   }
 
-  const searchWithSerialNum = async (e: ChangeEvent<HTMLInputElement>) => {
-    const serialNum = e.target.value;
-
+  const searchWithSerialNum = async (serialNum: string) => {
     try {
       const response = await axios.get(
         `${BACKEND_URL}/findserial/${serialNum}/1`
@@ -200,7 +198,7 @@ export const AddItemForm = () => {
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          searchWithSerialNum(e);
+                          searchWithSerialNum(e.target.value);
                         }}
                       />
                     </FormControl>
@@ -223,6 +221,7 @@ export const AddItemForm = () => {
                       onValueChange={(selectedItem) => {
                         field.onChange(selectedItem);
                         form.setValue("materialCode", selectedItem);
+                        searchWithSerialNum(selectedItem);
                       }}
                       value={field.value}
                     >

@@ -57,6 +57,7 @@ export const AllItems = () => {
                 <TableHead>Par Level</TableHead>
                 <TableHead>Room</TableHead>
                 <TableHead>Room Quantity</TableHead>
+                <TableHead>Expiry Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -72,9 +73,18 @@ export const AllItems = () => {
                   </TableCell>
                   <TableCell>
                     {item.roomItems.map((roomItem) => (
-                      <p key={roomItem.id}>
+                      <div key={roomItem.id}>
                         {roomItem.quantity} {roomItem.uom}
-                      </p>
+                      </div>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    {item.roomItems.map((roomItem) => (
+                      <div key={roomItem.id}>
+                        {roomItem.expiry_date
+                          ? new Date(roomItem.expiry_date).toLocaleDateString()
+                          : "N/A"}
+                      </div>
                     ))}
                   </TableCell>
                 </TableRow>

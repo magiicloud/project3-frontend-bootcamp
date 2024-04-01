@@ -117,10 +117,10 @@ export const AddItemForm = () => {
     }
   };
 
-  const searchWithSerialNum = async (serialNum: string) => {
+  const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
     try {
       const response = await axios.get(
-        `${BACKEND_URL}/findserial/${serialNum}/1`
+        `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
       );
       console.log(response.data);
       form.setValue("itemName", response.data.serial_num);
@@ -187,6 +187,46 @@ export const AddItemForm = () => {
                 )}
               />
             </div>
+
+            {/* SELECT ROOMS */}
+            <div className="sm:col-start-3 sm:col-span-4">
+              <FormField
+                control={form.control}
+                name="roomSelect"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Room</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a room to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* Select Room Component */}
+                        {roomOptions.map((option) => (
+                          <SelectItem
+                            key={option.id}
+                            value={option.id.toString()}
+                          >
+                            {option.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <FormDescription>
+                      Select the room that the item belong to.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             {/* TEXT INPUT BOX */}
             <div className="sm:col-start-3 sm:col-span-4">
               <FormField
@@ -201,7 +241,10 @@ export const AddItemForm = () => {
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
-                          searchWithSerialNum(e.target.value);
+                          searchWithSerialNum(
+                            e.target.value,
+                            form.getValues("roomSelect")
+                          );
                         }}
                       />
                     </FormControl>
@@ -224,7 +267,10 @@ export const AddItemForm = () => {
                       onValueChange={(selectedItem) => {
                         field.onChange(selectedItem);
                         form.setValue("serialNum", selectedItem);
-                        searchWithSerialNum(selectedItem);
+                        searchWithSerialNum(
+                          selectedItem,
+                          form.getValues("roomSelect")
+                        );
                       }}
                       value={field.value}
                     >
@@ -269,52 +315,14 @@ export const AddItemForm = () => {
                 )}
               />
             </div>
-            {/* SELECT ROOMS */}
-            <div className="sm:col-span-2">
-              <FormField
-                control={form.control}
-                name="roomSelect"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Select Room</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a room to display" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {/* Select Room Component */}
-                        {roomOptions.map((option) => (
-                          <SelectItem
-                            key={option.id}
-                            value={option.id.toString()}
-                          >
-                            {option.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    <FormDescription>
-                      Select the room that the item belong to.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
             {/* DATE PICKER */}
-            <div className="mt-2 sm:col-start-3 sm:col-span-4">
+            <div className="sm:col-span-2">
               <FormField
                 control={form.control}
                 name="expiryDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem>
                     <FormLabel>Expiry Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -322,7 +330,7 @@ export const AddItemForm = () => {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -341,7 +349,7 @@ export const AddItemForm = () => {
                           selected={field.value}
                           onSelect={field.onChange}
                           disabled={(date) =>
-                            date < new Date() || date < new Date("1900-01-01")
+                            date <= new Date() || date < new Date("1900-01-01")
                           }
                           initialFocus
                         />

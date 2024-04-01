@@ -48,7 +48,7 @@ const formSchema = z.object({
   roomSelect: z.coerce.number().min(1, "Please select a room to display."),
 });
 
-export const AddItemForm = () => {
+export const ManageItems = () => {
   // Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -144,14 +144,6 @@ export const AddItemForm = () => {
                       >
                         <FormItem className="flex items-center space-x-3 space-y-0">
                           <FormControl>
-                            <RadioGroupItem value="add" />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            Add new item
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
-                          <FormControl>
                             <RadioGroupItem value="count" />
                           </FormControl>
                           <FormLabel className="font-normal">
@@ -231,135 +223,95 @@ export const AddItemForm = () => {
             </div>
 
             {/* TEXT INPUT BOX */}
-            {selectedType === "add" ? (
-              <div className="sm:col-start-3 sm:col-span-4">
-                <FormField
-                  control={form.control}
-                  name="serialNum"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Serial Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Type or scan here" {...field} />
-                      </FormControl>
-                      <FormDescription>Type the serial number.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            ) : (
-              <div className="sm:col-start-3 sm:col-span-4">
-                <FormField
-                  control={form.control}
-                  name="serialNum"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Serial Number</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Type or scan here"
-                          {...field}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            searchWithSerialNum(
-                              e.target.value,
-                              form.getValues("roomSelect")
-                            );
-                          }}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Type or scan the serial number.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
-
-            {selectedType === "add" ? (
-              <div className="sm:col-start-3 sm:col-span-4">
-                <FormField
-                  control={form.control}
-                  name="itemName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Item Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Type in the item name" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Type the item name to be added.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            ) : (
-              <div className="sm:col-start-3 sm:col-span-4">
-                <FormField
-                  control={form.control}
-                  name="itemName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Select Item</FormLabel>
-                      <Select
-                        onValueChange={(selectedItem) => {
-                          field.onChange(selectedItem);
-                          form.setValue("serialNum", selectedItem);
+            <div className="sm:col-start-3 sm:col-span-4">
+              <FormField
+                control={form.control}
+                name="serialNum"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Serial Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Type or scan here"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
                           searchWithSerialNum(
-                            selectedItem,
+                            e.target.value,
                             form.getValues("roomSelect")
                           );
                         }}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an item to display" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {/* Select Item Options */}
-                          {allItemsLoading && (
-                            <SelectItem value="loading" disabled>
-                              Loading items...
-                            </SelectItem>
-                          )}
-                          {!allItemsLoading && allItemsError && (
-                            <SelectItem value="error" disabled>
-                              Error loading items.
-                            </SelectItem>
-                          )}
-                          {!allItemsLoading &&
-                            !allItemsError &&
-                            allItems.map((item) => (
-                              <SelectItem key={item.id} value={item.serial_num}>
-                                {item.item_name}
-                              </SelectItem>
-                            ))}
-                          {!allItemsLoading &&
-                            !allItemsError &&
-                            !allItems.length && (
-                              <SelectItem value="no-items" disabled>
-                                No items available.
-                              </SelectItem>
-                            )}
-                        </SelectContent>
-                      </Select>
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Type or scan the serial number.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                      <FormDescription>
-                        Select the item that you want to transact.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            )}
+            <div className="sm:col-start-3 sm:col-span-4">
+              <FormField
+                control={form.control}
+                name="itemName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Item</FormLabel>
+                    <Select
+                      onValueChange={(selectedItem) => {
+                        field.onChange(selectedItem);
+                        form.setValue("serialNum", selectedItem);
+                        searchWithSerialNum(
+                          selectedItem,
+                          form.getValues("roomSelect")
+                        );
+                      }}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an item to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* Select Item Options */}
+                        {allItemsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading items...
+                          </SelectItem>
+                        )}
+                        {!allItemsLoading && allItemsError && (
+                          <SelectItem value="error" disabled>
+                            Error loading items.
+                          </SelectItem>
+                        )}
+                        {!allItemsLoading &&
+                          !allItemsError &&
+                          allItems.map((item) => (
+                            <SelectItem key={item.id} value={item.serial_num}>
+                              {item.item_name}
+                            </SelectItem>
+                          ))}
+                        {!allItemsLoading &&
+                          !allItemsError &&
+                          !allItems.length && (
+                            <SelectItem value="no-items" disabled>
+                              No items available.
+                            </SelectItem>
+                          )}
+                      </SelectContent>
+                    </Select>
+
+                    <FormDescription>
+                      Select the item that you want to transact.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <div className="sm:col-start-3 sm:col-span-2">
               <FormField

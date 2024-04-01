@@ -5,7 +5,8 @@ import { Dashboard } from "./pages/Dashboard";
 import { Buildings } from "./pages/Buildings";
 import { Room } from "./pages/Room";
 import { AllItems } from "./pages/AllItems";
-import { AddItemForm } from "./pages/AddItemForm";
+import { ManageItems } from "./pages/ManageItems";
+import { AddNewItem } from "./pages/AddNewItem";
 
 const App = () => {
   return (
@@ -16,7 +17,8 @@ const App = () => {
         <Route path="/buildings" element={<Buildings />} />
         <Route path="/room" element={<Room />} />
         <Route path="/allitems" element={<AllItems />} />
-        <Route path="/additemform" element={<AddItemForm />} />
+        <Route path="/manageitems" element={<ManageItems />} />
+        <Route path="/addnewitem" element={<AddNewItem />} />
       </Routes>
     </BrowserRouter>
   );

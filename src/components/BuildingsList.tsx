@@ -38,7 +38,6 @@ type buildingList = building[];
 export const BuildingsList = () => {
   const [buildings, setBuildings] = useState<buildingList>([]);
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
-  const [detailDialog, setDetailDialog] = useState<boolean>(false);
 
   const fetchBuildings = async () => {
     const fetchedBuildings = await fetch("http://localhost:3000/buildings", {
@@ -75,7 +74,7 @@ export const BuildingsList = () => {
         </div>
       ));
       return (
-        <Dialog>
+        <Dialog key={index}>
           <DialogTrigger className="w-full">
             <div className="h-[150px] border-t border-b border-gray-500 w-full flex flex-row">
               <img

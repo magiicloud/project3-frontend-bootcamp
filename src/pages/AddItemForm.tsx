@@ -33,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { useAllItems, useRooms } from "../hooks/useFetchFormData";
 
 const formSchema = z.object({
   type: z.enum(["add", "count", "move"], {
@@ -47,45 +48,7 @@ const formSchema = z.object({
   roomSelect: z.coerce.number().min(1, "Please select a room to display."),
 });
 
-interface Room {
-  id: number;
-  name: string;
-}
-
-interface Item {
-  id: number;
-  item_name: string;
-  serial_num: string;
-}
-
 export const AddItemForm = () => {
-  const [itemOptions, setItemOptions] = useState<Item[]>([]);
-  const [roomOptions, setRoomOptions] = useState<Room[]>([]);
-
-  const getItems = async () => {
-    try {
-      const allItems = await axios.get(`${BACKEND_URL}/allitems/`);
-      setItemOptions(allItems.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getRooms = async () => {
-    try {
-      const allRooms = await axios.get(`${BACKEND_URL}/allrooms/`);
-      setRoomOptions(allRooms.data);
-      console.log(allRooms.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    getItems();
-    getRooms();
-  }, []);
-
   // Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -96,6 +59,13 @@ export const AddItemForm = () => {
       roomSelect: 0,
     },
   });
+
+  const { rooms, error: roomsError, isLoading: roomsLoading } = useRooms();
+  const {
+    allItems,
+    error: allItemsError,
+    isLoading: allItemsLoading,
+  } = useAllItems();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     console.log(formData);
@@ -207,14 +177,31 @@ export const AddItemForm = () => {
                       </FormControl>
                       <SelectContent>
                         {/* Select Room Component */}
-                        {roomOptions.map((option) => (
-                          <SelectItem
-                            key={option.id}
-                            value={option.id.toString()}
-                          >
-                            {option.name}
+                        {roomsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading rooms...
                           </SelectItem>
-                        ))}
+                        )}
+                        {!roomsLoading && roomsError && (
+                          <SelectItem value="error" disabled>
+                            Error loading rooms.
+                          </SelectItem>
+                        )}
+                        {!roomsLoading &&
+                          !roomsError &&
+                          rooms.map((room) => (
+                            <SelectItem
+                              key={room.id}
+                              value={room.id.toString()}
+                            >
+                              {room.name}
+                            </SelectItem>
+                          ))}
+                        {!roomsLoading && !roomsError && !rooms.length && (
+                          <SelectItem value="no-rooms" disabled>
+                            No rooms available.
+                          </SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
 
@@ -281,11 +268,30 @@ export const AddItemForm = () => {
                       </FormControl>
                       <SelectContent>
                         {/* Select Item Options */}
-                        {itemOptions.map((option) => (
-                          <SelectItem key={option.id} value={option.serial_num}>
-                            {option.item_name}
+                        {allItemsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading items...
                           </SelectItem>
-                        ))}
+                        )}
+                        {!allItemsLoading && allItemsError && (
+                          <SelectItem value="error" disabled>
+                            Error loading items.
+                          </SelectItem>
+                        )}
+                        {!allItemsLoading &&
+                          !allItemsError &&
+                          allItems.map((item) => (
+                            <SelectItem key={item.id} value={item.serial_num}>
+                              {item.item_name}
+                            </SelectItem>
+                          ))}
+                        {!allItemsLoading &&
+                          !allItemsError &&
+                          !allItems.length && (
+                            <SelectItem value="no-items" disabled>
+                              No items available.
+                            </SelectItem>
+                          )}
                       </SelectContent>
                     </Select>
 

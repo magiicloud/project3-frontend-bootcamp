@@ -19,19 +19,19 @@ export const ManageItems = () => {
           <TabsList className="bg-transparent pb-8 grid grid-cols-1 gap-y-8 gap-x-1 sm:grid-cols-8">
             <TabsTrigger
               value="count"
-              className="bg-gray-100 rounded-3xl px-5 py-2 transition-colors hover:text-primary text-muted-foreground sm:col-start-3 sm:col-span-1"
+              className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-start-3 sm:col-span-1"
             >
               Cycle Count
             </TabsTrigger>
             <TabsTrigger
               value="add"
-              className="bg-gray-100 rounded-3xl px-5 py-2 transition-colors hover:text-primary text-muted-foreground sm:col-span-1"
+              className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-span-1"
             >
               Add New Item
             </TabsTrigger>
             <TabsTrigger
               value="move"
-              className="bg-gray-100 rounded-3xl px-5 py-2 transition-colors hover:text-primary text-muted-foreground sm:col-span-1"
+              className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-span-1"
             >
               Daily Movement
             </TabsTrigger>

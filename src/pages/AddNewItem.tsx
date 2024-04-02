@@ -91,7 +91,7 @@ export const AddNewItem = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="pb-8 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-8"
+          className="pb-8 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-8"
         >
           <h4 className="text-left sm:col-start-3 sm:col-span-4">
             Add a new item into inventory..
@@ -207,7 +207,7 @@ export const AddNewItem = () => {
             />
           </div>
 
-          <div className="sm:col-start-3 sm:col-span-2">
+          <div className="sm:col-span-2">
             <FormField
               control={form.control}
               name="uom"
@@ -215,9 +215,9 @@ export const AddNewItem = () => {
                 <FormItem>
                   <FormLabel>UOM</FormLabel>
                   <FormControl>
-                    <Input placeholder="Type here" {...field} />
+                    <Input placeholder="e.g. TAB, BOT, TUBE..." {...field} />
                   </FormControl>
-                  <FormDescription>UOM</FormDescription>
+                  <FormDescription>State the unit of measure.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

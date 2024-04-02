@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "../components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -6,13 +6,19 @@ import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const LoginButton = () => {
-    const { loginWithRedirect, isAuthenticated } = useAuth0();
+    const { loginWithRedirect, isAuthenticated, getAccessTokenSilently } =
+      useAuth0();
     const navigate = useNavigate();
 
-    useEffect(() => {
+    const checkUser = async () => {
       if (isAuthenticated) {
+        await getAccessTokenSilently();
         navigate("/dashboard");
       }
+    };
+
+    useEffect(() => {
+      checkUser();
     }, [isAuthenticated]);
 
     return (

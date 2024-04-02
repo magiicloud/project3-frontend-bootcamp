@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { BACKEND_URL } from "../constants";
-import axios from "axios";
+import React from "react";
+import { useAllItems } from "../hooks/useFetchFormData";
 import {
   Table,
   TableBody,
@@ -11,38 +10,11 @@ import {
   TableRow,
 } from "../components/ui/table";
 
-interface Item {
-  id: number;
-  serial_num: string;
-  item_name: string;
-  par_level: number;
-  roomItems: {
-    id: number;
-    room_id: number;
-    item_id: number;
-    quantity: number;
-    uom: string;
-    expiry_date: Date;
-    room: {
-      name: string;
-    };
-  }[];
-}
-
 export const AllItems = () => {
-  const [items, setItems] = useState<Item[]>([]);
+  const { allItems, error: allItemsError } = useAllItems();
+  if (allItemsError) return <div>Error loading items.</div>;
+  if (!allItems.length) return <div>Loading items...</div>;
 
-  useEffect(() => {
-    const getItems = async () => {
-      try {
-        const allItemsData = await axios.get(`${BACKEND_URL}/allitems/`);
-        setItems(allItemsData.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getItems();
-  }, []);
   return (
     <>
       <div className="prose grid grid-cols-1 p-6 max-w-full sm:grid-cols-6 sm:p-12">
@@ -57,10 +29,11 @@ export const AllItems = () => {
                 <TableHead>Par Level</TableHead>
                 <TableHead>Room</TableHead>
                 <TableHead>Room Quantity</TableHead>
+                <TableHead>Expiry Date</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {items.map((item) => (
+              {allItems.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.serial_num}</TableCell>
                   <TableCell>{item.item_name}</TableCell>
@@ -72,9 +45,18 @@ export const AllItems = () => {
                   </TableCell>
                   <TableCell>
                     {item.roomItems.map((roomItem) => (
-                      <p key={roomItem.id}>
+                      <div key={roomItem.id}>
                         {roomItem.quantity} {roomItem.uom}
-                      </p>
+                      </div>
+                    ))}
+                  </TableCell>
+                  <TableCell>
+                    {item.roomItems.map((roomItem) => (
+                      <div key={roomItem.id}>
+                        {roomItem.expiry_date
+                          ? new Date(roomItem.expiry_date).toLocaleDateString()
+                          : "N/A"}
+                      </div>
                     ))}
                   </TableCell>
                 </TableRow>

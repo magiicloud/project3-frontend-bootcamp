@@ -2,6 +2,7 @@ import React, { EffectCallback, useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";
 import { SetStateAction } from "react";
+import { BACKEND_URL } from "../constants";
 import {
   Dialog,
   DialogTrigger,
@@ -104,7 +105,7 @@ export const BuildingsList = () => {
               <img
                 src={building.building_img_url}
                 alt="building map"
-                className="relative"
+                className="relative w-full"
               />
 
               {roomDivs}

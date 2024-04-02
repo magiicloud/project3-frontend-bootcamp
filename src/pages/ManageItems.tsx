@@ -7,6 +7,7 @@ import {
 } from "../components/ui/tabs";
 import { AddNewItem } from "./AddNewItem";
 import { CycleCount } from "./CycleCount";
+import { DeleteItem } from "./DeleteItem";
 
 export const ManageItems = () => {
   return (
@@ -30,10 +31,10 @@ export const ManageItems = () => {
               Add New Item
             </TabsTrigger>
             <TabsTrigger
-              value="move"
+              value="delete"
               className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-span-1"
             >
-              Daily Movement
+              Delete Item
             </TabsTrigger>
           </TabsList>
           <TabsContent value="count">
@@ -41,6 +42,9 @@ export const ManageItems = () => {
           </TabsContent>
           <TabsContent value="add">
             <AddNewItem />
+          </TabsContent>
+          <TabsContent value="delete">
+            <DeleteItem />
           </TabsContent>
         </Tabs>
       </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { cn } from "../lib/utils";
 import { BACKEND_URL } from "../constants";
 import axios from "axios";
@@ -33,19 +33,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../components/ui/tabs";
 import { useAllItems, useRooms } from "../hooks/useFetchFormData";
-import { AddNewItem } from "./AddNewItem";
 
 const formSchema = z.object({
-  type: z.enum(["add", "count", "move"], {
-    required_error: "You need to select a transaction type.",
-  }),
   serialNum: z.string().min(1, "Serial number cannot be blank"),
   itemName: z.string().min(1, "Item name cannot be blank"),
   quantity: z.coerce.number().min(1, "Quantity cannot be blank"),
@@ -77,23 +67,22 @@ export const CycleCount = () => {
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     console.log(formData);
 
-    if (form.getValues("type") === "count") {
-      try {
-        const response = await axios.put(`${BACKEND_URL}/updateitem`, formData);
-        console.log(response.data);
-        toast({
-          title: "You submitted the following values:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">
-                {JSON.stringify(formData, null, 2)}
-              </code>
-            </pre>
-          ),
-        });
-      } catch (error) {
-        console.error("Error searching backend:", error);
-      }
+    try {
+      const response = await axios.put(`${BACKEND_URL}/updateitem`, formData);
+      console.log(response.data);
+      form.formState.isSubmitSuccessful && form.reset();
+      toast({
+        title: "You submitted the following values:",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              {JSON.stringify(formData, null, 2)}
+            </code>
+          </pre>
+        ),
+      });
+    } catch (error) {
+      console.error("Error searching backend:", error);
     }
   };
 
@@ -114,17 +103,6 @@ export const CycleCount = () => {
     }
   };
 
-  const selectedType = form.watch("type");
-
-  useEffect(() => {
-    if (selectedType) {
-      form.resetField("itemName");
-      form.resetField("serialNum");
-      form.resetField("quantity");
-      form.resetField("expiryDate");
-    }
-  }, [selectedType]);
-
   return (
     <>
       <Form {...form}>
@@ -136,95 +114,62 @@ export const CycleCount = () => {
             Conduct a cycle count..
           </h4>
 
-          {/* Transaction Type Selection */}
-          <div className="mb-3 sm:col-start-3 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Choose transaction type...</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex space-x-3"
-                    >
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="count" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Cycle count
-                        </FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="move" />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          Item movement
-                        </FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
           {/* SELECT ROOMS */}
           <div className="sm:col-start-3 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="roomSelect"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Room</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a room to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* Select Room Component */}
-                      {roomsLoading && (
-                        <SelectItem value="loading" disabled>
-                          Loading rooms...
-                        </SelectItem>
-                      )}
-                      {!roomsLoading && roomsError && (
-                        <SelectItem value="error" disabled>
-                          Error loading rooms.
-                        </SelectItem>
-                      )}
-                      {!roomsLoading &&
-                        !roomsError &&
-                        rooms.map((room) => (
-                          <SelectItem key={room.id} value={room.id.toString()}>
-                            {room.name}
+            {!roomsLoading && (
+              <FormField
+                control={form.control}
+                name="roomSelect"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Room</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a room to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* Select Room Component */}
+                        {roomsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading rooms...
                           </SelectItem>
-                        ))}
-                      {!roomsLoading && !roomsError && !rooms.length && (
-                        <SelectItem value="no-rooms" disabled>
-                          No rooms available.
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                        )}
+                        {!roomsLoading && roomsError && (
+                          <SelectItem value="error" disabled>
+                            Error loading rooms.
+                          </SelectItem>
+                        )}
+                        {!roomsLoading &&
+                          !roomsError &&
+                          rooms.map((room) => (
+                            <SelectItem
+                              key={room.id}
+                              value={room.id.toString()}
+                            >
+                              {room.name}
+                            </SelectItem>
+                          ))}
+                        {!roomsLoading && !roomsError && !rooms.length && (
+                          <SelectItem value="no-rooms" disabled>
+                            No rooms available.
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
 
-                  <FormDescription>
-                    Select the room that the item belong to.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormDescription>
+                      Select the room that the item belong to.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           {/* TEXT INPUT BOX */}
@@ -258,64 +203,66 @@ export const CycleCount = () => {
           </div>
 
           <div className="sm:col-start-3 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="itemName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Item</FormLabel>
-                  <Select
-                    onValueChange={(selectedItem) => {
-                      field.onChange(selectedItem);
-                      form.setValue("serialNum", selectedItem);
-                      searchWithSerialNum(
-                        selectedItem,
-                        form.getValues("roomSelect")
-                      );
-                    }}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an item to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* Select Item Options */}
-                      {allItemsLoading && (
-                        <SelectItem value="loading" disabled>
-                          Loading items...
-                        </SelectItem>
-                      )}
-                      {!allItemsLoading && allItemsError && (
-                        <SelectItem value="error" disabled>
-                          Error loading items.
-                        </SelectItem>
-                      )}
-                      {!allItemsLoading &&
-                        !allItemsError &&
-                        allItems.map((item) => (
-                          <SelectItem key={item.id} value={item.serial_num}>
-                            {item.item_name}
-                          </SelectItem>
-                        ))}
-                      {!allItemsLoading &&
-                        !allItemsError &&
-                        !allItems.length && (
-                          <SelectItem value="no-items" disabled>
-                            No items available.
+            {!allItemsLoading && (
+              <FormField
+                control={form.control}
+                name="itemName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Item</FormLabel>
+                    <Select
+                      onValueChange={(selectedItem) => {
+                        field.onChange(selectedItem);
+                        form.setValue("serialNum", selectedItem);
+                        searchWithSerialNum(
+                          selectedItem,
+                          form.getValues("roomSelect")
+                        );
+                      }}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an item to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* Select Item Options */}
+                        {allItemsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading items...
                           </SelectItem>
                         )}
-                    </SelectContent>
-                  </Select>
+                        {!allItemsLoading && allItemsError && (
+                          <SelectItem value="error" disabled>
+                            Error loading items.
+                          </SelectItem>
+                        )}
+                        {!allItemsLoading &&
+                          !allItemsError &&
+                          allItems.map((item) => (
+                            <SelectItem key={item.id} value={item.serial_num}>
+                              {item.item_name}
+                            </SelectItem>
+                          ))}
+                        {!allItemsLoading &&
+                          !allItemsError &&
+                          !allItems.length && (
+                            <SelectItem value="no-items" disabled>
+                              No items available.
+                            </SelectItem>
+                          )}
+                      </SelectContent>
+                    </Select>
 
-                  <FormDescription>
-                    Select the item that you want to transact.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormDescription>
+                      Select the item that you want to transact.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           <div className="sm:col-start-3 sm:col-span-2">

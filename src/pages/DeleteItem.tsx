@@ -88,7 +88,7 @@ export const DeleteItem = () => {
             </pre>
           ),
         });
-        form.reset();
+        form.formState.isSubmitSuccessful && form.reset();
       } catch (error) {
         console.error("Error searching backend:", error);
       }
@@ -110,6 +110,7 @@ export const DeleteItem = () => {
             </pre>
           ),
         });
+        form.formState.isSubmitSuccessful && form.reset();
       } catch (error) {
         console.error("Error searching backend:", error);
       }
@@ -195,55 +196,60 @@ export const DeleteItem = () => {
 
           {/* SELECT ROOMS */}
           <div className="sm:col-start-3 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="roomSelect"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Room</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a room to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* Select Room Component */}
-                      {roomsLoading && (
-                        <SelectItem value="loading" disabled>
-                          Loading rooms...
-                        </SelectItem>
-                      )}
-                      {!roomsLoading && roomsError && (
-                        <SelectItem value="error" disabled>
-                          Error loading rooms.
-                        </SelectItem>
-                      )}
-                      {!roomsLoading &&
-                        !roomsError &&
-                        rooms.map((room) => (
-                          <SelectItem key={room.id} value={room.id.toString()}>
-                            {room.name}
+            {!roomsLoading && (
+              <FormField
+                control={form.control}
+                name="roomSelect"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Room</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a room to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* Select Room Component */}
+                        {roomsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading rooms...
                           </SelectItem>
-                        ))}
-                      {!roomsLoading && !roomsError && !rooms.length && (
-                        <SelectItem value="no-rooms" disabled>
-                          No rooms available.
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                        )}
+                        {!roomsLoading && roomsError && (
+                          <SelectItem value="error" disabled>
+                            Error loading rooms.
+                          </SelectItem>
+                        )}
+                        {!roomsLoading &&
+                          !roomsError &&
+                          rooms.map((room) => (
+                            <SelectItem
+                              key={room.id}
+                              value={room.id.toString()}
+                            >
+                              {room.name}
+                            </SelectItem>
+                          ))}
+                        {!roomsLoading && !roomsError && !rooms.length && (
+                          <SelectItem value="no-rooms" disabled>
+                            No rooms available.
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
 
-                  <FormDescription>
-                    Select the room that the item belong to.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormDescription>
+                      Select the room that the item belong to.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           {/* TEXT INPUT BOX */}

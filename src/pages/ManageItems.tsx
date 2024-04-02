@@ -12,31 +12,31 @@ import { DeleteItem } from "./DeleteItem";
 export const ManageItems = () => {
   return (
     <>
-      <div className="prose flex flex-col p-6 max-w-full">
-        <Tabs
-          defaultValue="count"
-          className="space-y-4 flex flex-col justify-center"
-        >
-          <TabsList className="bg-transparent pb-8 grid grid-cols-1 gap-y-8 gap-x-1 sm:grid-cols-8">
-            <TabsTrigger
-              value="count"
-              className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-start-3 sm:col-span-1"
-            >
-              Cycle Count
-            </TabsTrigger>
-            <TabsTrigger
-              value="add"
-              className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-span-1"
-            >
-              Add New Item
-            </TabsTrigger>
-            <TabsTrigger
-              value="delete"
-              className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-span-1"
-            >
-              Delete Item
-            </TabsTrigger>
-          </TabsList>
+      <Tabs
+        defaultValue="count"
+        className="space-y-8 flex flex-col justify-center"
+      >
+        <TabsList className="bg-transparent pb-8 grid grid-cols-3 gap-y-1 gap-x-1 sm:grid-cols-8 sm:gap-y-8">
+          <TabsTrigger
+            value="count"
+            className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-start-1 sm:col-span-1"
+          >
+            Cycle Count
+          </TabsTrigger>
+          <TabsTrigger
+            value="add"
+            className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-span-1"
+          >
+            Add New Item
+          </TabsTrigger>
+          <TabsTrigger
+            value="delete"
+            className="data-[state=active]:bg-gray-100 data-[state=active]:font-medium font-normal rounded-3xl px-5 py-2 transition-colors hover:text-primary hover:font-medium text-muted-foreground sm:col-span-1"
+          >
+            Delete Item
+          </TabsTrigger>
+        </TabsList>
+        <div className="mx-1 max-w-screen-lg rounded-lg border border-dashed shadow-sm">
           <TabsContent value="count">
             <CycleCount />
           </TabsContent>
@@ -46,8 +46,8 @@ export const ManageItems = () => {
           <TabsContent value="delete">
             <DeleteItem />
           </TabsContent>
-        </Tabs>
-      </div>
+        </div>
+      </Tabs>
     </>
   );
 };

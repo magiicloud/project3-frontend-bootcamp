@@ -8,6 +8,7 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { Calendar } from "../components/ui/calendar";
 import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
+import { Separator } from "../components/ui/separator";
 import { z } from "zod";
 import {
   Popover,
@@ -150,14 +151,12 @@ export const DeleteItem = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="pb-8 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-8"
+          className="pb-8 px-12 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-7"
         >
-          <h4 className="text-left sm:col-start-3 sm:col-span-4">
-            Delete an item in a room..
-          </h4>
+          <h3 className="text-left sm:col-start-1 sm:col-span-3">Step 1</h3>
 
           {/* Transaction Type Selection */}
-          <div className="mb-3 sm:col-start-3 sm:col-span-4">
+          <div className="mb-3 sm:col-start-1 sm:col-span-4">
             <FormField
               control={form.control}
               name="type"
@@ -195,7 +194,7 @@ export const DeleteItem = () => {
           </div>
 
           {/* SELECT ROOMS */}
-          <div className="sm:col-start-3 sm:col-span-4">
+          <div className="sm:col-start-1 sm:col-span-3">
             {!roomsLoading && (
               <FormField
                 control={form.control}
@@ -253,7 +252,7 @@ export const DeleteItem = () => {
           </div>
 
           {/* TEXT INPUT BOX */}
-          <div className="sm:col-start-3 sm:col-span-4">
+          <div className="sm:col-start-5 sm:col-span-3">
             <FormField
               control={form.control}
               name="serialNum"
@@ -282,7 +281,13 @@ export const DeleteItem = () => {
             />
           </div>
 
-          <div className="sm:col-start-3 sm:col-span-4">
+          <div className="mt-8 sm:col-start-1 sm:col-span-7">
+            <Separator />
+          </div>
+
+          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 2</h3>
+
+          <div className="sm:col-start-1 sm:col-span-3">
             <FormField
               control={form.control}
               name="itemName"
@@ -305,7 +310,7 @@ export const DeleteItem = () => {
             />
           </div>
 
-          <div className="sm:col-start-3 sm:col-span-2">
+          <div className="sm:col-span-2">
             <FormField
               control={form.control}
               name="quantity"
@@ -372,8 +377,8 @@ export const DeleteItem = () => {
               )}
             />
           </div>
-          <div className="mt-6 sm:col-start-4 sm:col-span-2">
-            <Button type="submit" size={"full"}>
+          <div className="mt-6 sm:col-start-1 sm:col-span-1">
+            <Button type="submit" size={"lg"}>
               Add to cart
             </Button>
           </div>

@@ -35,7 +35,7 @@ export const Dashboard = () => {
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link to={"/"} className="flex items-center gap-2 font-semibold">
               <Package2 className="h-6 w-6" />
-              <span className="">Acme Inc</span>
+              <span className="">StockTrackr</span>
             </Link>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
               <Bell className="h-4 w-4" />
@@ -178,13 +178,13 @@ export const Dashboard = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          <div className="flex items-center">
+        <main className="prose max-w-full ml-4 flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          {/* <div className="flex items-center">
             <h1 className="text-lg font-semibold md:text-2xl">Inventory</h1>
-          </div>
-          <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
-            <Outlet />
-          </div>
+          </div> */}
+          {/* <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"> */}
+          <Outlet />
+          {/* </div> */}
         </main>
       </div>
     </div>

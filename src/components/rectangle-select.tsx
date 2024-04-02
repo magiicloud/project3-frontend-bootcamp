@@ -168,7 +168,6 @@ const RectangleSelection: React.FC<SelectionBoxProps> = (props) => {
         if (selectionBox) {
           const elem = document.getElementById(props.id ?? "");
           var viewportOffset = elem?.getBoundingClientRect();
-          console.log(viewportOffset);
           const touchLeave =
             evt.touches[0].pageX < (viewportOffset?.left ?? 0) ||
             evt.touches[0].pageX > (viewportOffset?.right ?? 0) ||

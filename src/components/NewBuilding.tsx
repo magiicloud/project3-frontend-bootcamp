@@ -15,12 +15,15 @@ import { Button } from "./ui/button";
 
 import { storage } from "../firebase";
 import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import axios from "axios";
 
 interface newRoom {
-  topLeft: number[];
+  top: number;
+  left: number;
   width: number;
   height: number;
   name: string;
+  building_id?: number;
 }
 
 interface building {
@@ -35,7 +38,8 @@ type rooms = newRoom[];
 export const NewBuilding = () => {
   const [rooms, setRooms] = useState<rooms>([]);
   const [newBox, setNewBox] = useState({
-    topLeft: [-1, -1],
+    top: -1,
+    left: -1,
     width: -1,
     height: -1,
   });
@@ -57,7 +61,8 @@ export const NewBuilding = () => {
     newRooms.push(newRoom);
     setRooms(newRooms);
     setNewBox({
-      topLeft: [-1, -1],
+      top: -1,
+      left: -1,
       width: -1,
       height: -1,
     });
@@ -71,6 +76,7 @@ export const NewBuilding = () => {
   const handleSuccess = () => {
     setMainDialog(false);
     setSuccessDialog(false);
+    window.location.reload();
   };
 
   const parentWidth = (elem: HTMLElement | null) => {
@@ -108,8 +114,8 @@ export const NewBuilding = () => {
       className="absolute"
       style={Object.assign({
         zIndex: 10,
-        left: room.topLeft[0] + "%",
-        top: room.topLeft[1] + "%",
+        left: room.left + "%",
+        top: room.top + "%",
         height: room.height + "%",
         width: room.width + "%",
         userSelect: "none",
@@ -129,8 +135,8 @@ export const NewBuilding = () => {
           className="absolute"
           style={Object.assign({
             zIndex: 10,
-            left: newBox.topLeft[0] + "%",
-            top: newBox.topLeft[1] + "%",
+            left: newBox.left + "%",
+            top: newBox.top + "%",
             height: newBox.height + "%",
             width: newBox.width + "%",
             userSelect: "none",
@@ -151,7 +157,27 @@ export const NewBuilding = () => {
   };
 
   const createNewFloorplan = (imageUrl: string) => {
-    console.log(imageUrl);
+    const data = {
+      building: {
+        name: buildingName,
+        image_size: "200px",
+        building_img_url: imageUrl,
+      },
+      rooms: [] as rooms,
+    };
+    rooms.map((room) => {
+      const newRoom = { ...room };
+      newRoom["building_id"] = 0;
+      data.rooms.push(newRoom);
+    });
+    axios
+      .post("http://localhost:3000/buildings", data)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     setSuccessDialog(true);
   };
 
@@ -197,7 +223,8 @@ export const NewBuilding = () => {
               id="building-highlight"
               onSelect={(e, coords) => {
                 setNewBox({
-                  topLeft: coords.topLeft,
+                  left: coords.topLeft[0],
+                  top: coords.topLeft[1],
                   width: coords.width,
                   height: coords.height,
                 });

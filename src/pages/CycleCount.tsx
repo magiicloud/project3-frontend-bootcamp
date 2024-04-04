@@ -35,6 +35,7 @@ import {
 } from "../components/ui/select";
 import { useAllItems, useRooms } from "../hooks/useFetchFormData";
 import { Cart } from "../components/Cart";
+import { CircleXIcon } from "lucide-react";
 
 const formSchema = z.object({
   serialNum: z.string().min(1, "Serial number cannot be blank"),
@@ -67,9 +68,14 @@ export const CycleCount = () => {
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     console.log(formData);
+    //!!! REMOVE AFTER AUTH SETUP WITH USERID!!!
+    const dataWithUserId = { ...formData, userId: 1 };
 
     try {
-      const response = await axios.put(`${BACKEND_URL}/updateitem`, formData);
+      const response = await axios.post(
+        `${BACKEND_URL}/additemcart`,
+        dataWithUserId
+      );
       console.log(response.data);
       form.formState.isSubmitSuccessful && form.reset();
       toast({
@@ -77,13 +83,21 @@ export const CycleCount = () => {
         description: (
           <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
             <code className="text-white">
-              {JSON.stringify(formData, null, 2)}
+              {JSON.stringify(dataWithUserId, null, 2)}
             </code>
           </pre>
         ),
       });
     } catch (error) {
-      console.error("Error searching backend:", error);
+      toast({
+        title: "Failed",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">{(error as Error).message}</code>
+          </pre>
+        ),
+      });
+      console.error("Error searching backend:", error as Error);
     }
   };
 
@@ -342,7 +356,7 @@ export const CycleCount = () => {
           </div>
         </form>
       </Form>
-      <Cart />
+      <Cart onSuccessfulCheckout={() => form.reset()} />
     </>
   );
 };

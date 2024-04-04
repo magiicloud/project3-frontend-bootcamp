@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
-import { Dashboard } from "./pages/Dashboard";
+import { MenuFrame } from "./pages/MenuFrame";
 import { Buildings } from "./pages/Buildings";
 import { Room } from "./pages/Room";
 import { AllItems } from "./pages/AllItems";
@@ -13,18 +13,18 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />}>
-          {/* Nested routes will render within <Dashboard /> */}
+        <Route path="/landing" element={<MenuFrame />}>
+          {/* Nested routes will render within <MenuFrame /> */}
           <Route path="buildings" element={<Buildings />} />
           <Route path="room" element={<Room />} />
           <Route path="allitems" element={<AllItems />} />
           <Route path="manageitems" element={<ManageItems />} />
           <Route path="addnewitem" element={<AddNewItem />} />
         </Route>
-        {/* Redirect to "/dashboard/buildings" or a default nested route if "/dashboard" is accessed directly */}
+        {/* Redirect to "/landing/allitems" or a default nested route if "/landing" is accessed directly */}
         <Route
-          path="/dashboard"
-          element={<Navigate replace to="/dashboard/allitems" />}
+          path="/landing"
+          element={<Navigate replace to="/landing/allitems" />}
         />
       </Routes>
     </BrowserRouter>

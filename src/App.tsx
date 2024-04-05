@@ -4,9 +4,9 @@ import { Login } from "./pages/Login";
 import { MenuFrame } from "./pages/MenuFrame";
 import { Buildings } from "./pages/Buildings";
 import { Room } from "./pages/Room";
-import { AllItems } from "./pages/AllItems";
 import { ManageItems } from "./pages/ManageItems";
 import { AddNewItem } from "./pages/AddNewItem";
+import { AllItems } from "./pages/allitems/page";
 
 const App = () => {
   return (

@@ -3,7 +3,7 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { useAllItems } from "../../hooks/useFetchFormData";
 
-export const DemoPage = () => {
+export const AllItems = () => {
   const { allItems, error: allItemsError } = useAllItems();
   if (allItemsError) return <div>Error loading items.</div>;
   if (!allItems.length) return <div>Loading items...</div>;

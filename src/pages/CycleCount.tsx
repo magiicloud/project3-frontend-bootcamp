@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { cn } from "../lib/utils";
 import { BACKEND_URL } from "../constants";
 import axios from "axios";
@@ -35,7 +35,6 @@ import {
 } from "../components/ui/select";
 import { useAllItems, useRooms } from "../hooks/useFetchFormData";
 import { Cart } from "../components/Cart";
-import { CircleXIcon } from "lucide-react";
 
 const formSchema = z.object({
   serialNum: z.string().min(1, "Serial number cannot be blank"),

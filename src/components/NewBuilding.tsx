@@ -217,7 +217,7 @@ export const NewBuilding = () => {
       data.rooms.push(newRoom);
     });
     axios
-      .post("http://localhost:3000/buildings", data)
+      .post(process.env.REACT_APP_BACKEND_URL + "/buildings", data)
       .then((response) => {
         console.log(response.data);
         setCompleteDialogSuccess(true);

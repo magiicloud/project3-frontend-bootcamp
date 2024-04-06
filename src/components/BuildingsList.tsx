@@ -2,7 +2,6 @@ import React, { EffectCallback, useEffect, useState } from "react";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "./ui/button";
 import { SetStateAction } from "react";
-import { BACKEND_URL } from "../constants";
 import {
   Dialog,
   DialogTrigger,
@@ -11,6 +10,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "./ui/dialog";
+import axios from "axios";
 
 interface room {
   id: number;
@@ -34,18 +34,22 @@ interface building {
   rooms: room[];
 }
 
+interface CustomProp {
+  setRoom: React.Dispatch<React.SetStateAction<number | boolean>>;
+}
+
 type buildingList = building[];
 
-export const BuildingsList = () => {
+export const BuildingsList: React.FC<CustomProp> = (props) => {
   const [buildings, setBuildings] = useState<buildingList>([]);
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
 
   const fetchBuildings = async () => {
-    const fetchedBuildings = await fetch("http://localhost:3000/buildings", {
-      method: "get",
-    });
-    const fetchedBuildingsJson = await fetchedBuildings.json();
-    setBuildings(fetchedBuildingsJson as buildingList);
+    const fetchedBuildings = await axios.get(
+      process.env.REACT_APP_BACKEND_URL + "/buildings"
+    );
+    const fetchedBuildingsData = await fetchedBuildings.data;
+    setBuildings(fetchedBuildingsData as buildingList);
     return undefined;
   };
 
@@ -59,6 +63,7 @@ export const BuildingsList = () => {
         <div
           key={index}
           className="absolute"
+          onClick={() => props.setRoom(room.id)}
           style={Object.assign({
             zIndex: 10,
             left: room.left + "%",

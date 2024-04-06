@@ -60,7 +60,6 @@ const App = () => {
         >
           {/* Nested routes will render within <MenuFrame />, protected by ProtectedRoute */}
           <Route path="buildings" element={<Buildings />} />
-          <Route path="room" element={<Room />} />
           <Route path="allitems" element={<AllItems />} />
           <Route path="manageitems" element={<ManageItems />} />
           <Route path="addnewitem" element={<AddNewItem />} />

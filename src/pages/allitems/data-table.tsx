@@ -30,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/table";
+import { Separator } from "../../components/ui/separator";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -71,6 +72,17 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4 gap-1.5">
         <Input
+          placeholder="Search serial number..."
+          value={
+            (table.getColumn("serial_num")?.getFilterValue() as string) ?? ""
+          }
+          onChange={(event) =>
+            table.getColumn("serial_num")?.setFilterValue(event.target.value)
+          }
+          className="max-w-48"
+        />
+        <Separator orientation="vertical" className="h-8 mx-2" />
+        <Input
           placeholder="Search item name..."
           value={
             (table.getColumn("item_name")?.getFilterValue() as string) ?? ""
@@ -78,7 +90,7 @@ export function DataTable<TData, TValue>({
           onChange={(event) =>
             table.getColumn("item_name")?.setFilterValue(event.target.value)
           }
-          className="max-w-xs"
+          className="max-w-48"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

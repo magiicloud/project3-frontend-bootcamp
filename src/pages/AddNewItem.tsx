@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { Calendar } from "../components/ui/calendar";
+import { Separator } from "../components/ui/separator";
 import { z } from "zod";
 import {
   Popover,
@@ -60,6 +61,23 @@ export const AddNewItem = () => {
     },
   });
 
+  const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
+      );
+      console.log(response.data);
+      form.setValue("itemName", response.data.item_name);
+      form.setValue("uom", response.data.roomItems[0].uom);
+      form.setValue(
+        "expiryDate",
+        new Date(response.data.roomItems[0].expiry_date)
+      );
+    } catch (error) {
+      console.error("Error searching backend:", error);
+    }
+  };
+
   const { rooms, error: roomsError, isLoading: roomsLoading } = useRooms();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
@@ -83,7 +101,7 @@ export const AddNewItem = () => {
       console.error("Error searching backend:", error);
     }
   };
-  console.log(form.formState.errors);
+  // console.log(form.formState.errors);
 
   return (
     <>
@@ -91,68 +109,71 @@ export const AddNewItem = () => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="pb-8 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-8"
+          className="pb-8 px-12 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-7"
         >
-          <h4 className="text-left sm:col-start-3 sm:col-span-4">
-            Add a new item into inventory..
-          </h4>
+          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 1</h3>
 
           {/* SELECT ROOMS */}
-          <div className="sm:col-start-3 sm:col-span-4">
-            <FormField
-              control={form.control}
-              name="roomSelect"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Room</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value.toString()}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a room to display" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {/* Select Room Component */}
-                      {roomsLoading && (
-                        <SelectItem value="loading" disabled>
-                          Loading rooms...
-                        </SelectItem>
-                      )}
-                      {!roomsLoading && roomsError && (
-                        <SelectItem value="error" disabled>
-                          Error loading rooms.
-                        </SelectItem>
-                      )}
-                      {!roomsLoading &&
-                        !roomsError &&
-                        rooms.map((room) => (
-                          <SelectItem key={room.id} value={room.id.toString()}>
-                            {room.name}
+          <div className="sm:col-start-1 sm:col-span-3">
+            {!roomsLoading && (
+              <FormField
+                control={form.control}
+                name="roomSelect"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Room</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a room to display" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* Select Room Component */}
+                        {roomsLoading && (
+                          <SelectItem value="loading" disabled>
+                            Loading rooms...
                           </SelectItem>
-                        ))}
-                      {!roomsLoading && !roomsError && !rooms.length && (
-                        <SelectItem value="no-rooms" disabled>
-                          No rooms available.
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
+                        )}
+                        {!roomsLoading && roomsError && (
+                          <SelectItem value="error" disabled>
+                            Error loading rooms.
+                          </SelectItem>
+                        )}
+                        {!roomsLoading &&
+                          !roomsError &&
+                          rooms.map((room) => (
+                            <SelectItem
+                              key={room.id}
+                              value={room.id.toString()}
+                            >
+                              {room.name}
+                            </SelectItem>
+                          ))}
+                        {!roomsLoading && !roomsError && !rooms.length && (
+                          <SelectItem value="no-rooms" disabled>
+                            No rooms available.
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
 
-                  <FormDescription>
-                    Select the room that the item belong to.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormDescription>
+                      Select the room that the item belong to.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           {/* TEXT INPUT BOX */}
 
-          <div className="sm:col-start-3 sm:col-span-4">
+          <div className="sm:col-start-5 sm:col-span-3">
             <FormField
               control={form.control}
               name="serialNum"
@@ -160,7 +181,17 @@ export const AddNewItem = () => {
                 <FormItem>
                   <FormLabel>Serial Number</FormLabel>
                   <FormControl>
-                    <Input placeholder="Type or scan here" {...field} />
+                    <Input
+                      placeholder="Type or scan here"
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        searchWithSerialNum(
+                          e.target.value,
+                          form.getValues("roomSelect")
+                        );
+                      }}
+                    />
                   </FormControl>
                   <FormDescription>Type the serial number.</FormDescription>
                   <FormMessage />
@@ -169,7 +200,7 @@ export const AddNewItem = () => {
             />
           </div>
 
-          <div className="sm:col-start-3 sm:col-span-4">
+          <div className="sm:col-start-1 sm:col-span-3">
             <FormField
               control={form.control}
               name="itemName"
@@ -188,7 +219,13 @@ export const AddNewItem = () => {
             />
           </div>
 
-          <div className="sm:col-start-3 sm:col-span-2">
+          <div className="mt-8 sm:col-start-1 sm:col-span-7">
+            <Separator />
+          </div>
+
+          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 2</h3>
+
+          <div className="sm:col-start-1 sm:col-span-2">
             <FormField
               control={form.control}
               name="quantity"
@@ -207,7 +244,7 @@ export const AddNewItem = () => {
             />
           </div>
 
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-3">
             <FormField
               control={form.control}
               name="uom"
@@ -224,7 +261,7 @@ export const AddNewItem = () => {
             />
           </div>
 
-          <div className="sm:col-start-3 sm:col-span-2">
+          <div className="sm:col-span-2">
             <FormField
               control={form.control}
               name="par"
@@ -242,7 +279,7 @@ export const AddNewItem = () => {
           </div>
 
           {/* DATE PICKER */}
-          <div className="sm:col-span-2">
+          <div className="sm:col-start-1 sm:col-span-2">
             <FormField
               control={form.control}
               name="expiryDate"
@@ -288,8 +325,9 @@ export const AddNewItem = () => {
               )}
             />
           </div>
-          <div className="mt-6 sm:col-start-4 sm:col-span-2">
-            <Button type="submit" size={"full"}>
+          <div className="sm:col-span-5"></div>
+          <div className="mt-6 sm:col-start-1 sm:col-span-2">
+            <Button type="submit" size={"lg"}>
               Add Item
             </Button>
           </div>

@@ -3,10 +3,11 @@ import { cn } from "../lib/utils";
 import { BACKEND_URL } from "../constants";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFormState } from "react-hook-form";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { Calendar } from "../components/ui/calendar";
+import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
 import { Separator } from "../components/ui/separator";
 import { z } from "zod";
 import {
@@ -34,20 +35,23 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { useAllItems, useRooms } from "../hooks/useFetchFormData";
-import { Cart } from "../components/Cart";
-import { CircleXIcon } from "lucide-react";
 
 const formSchema = z.object({
-  serialNum: z.string().min(1, "Serial number cannot be blank"),
-  itemName: z.string().min(1, "Item name cannot be blank"),
-  quantity: z.coerce.number().min(1, "Quantity cannot be blank"),
-  expiryDate: z.date({
-    required_error: "An expiry date is required.",
+  type: z.enum(["deleteroomitem", "deleteall", "move"], {
+    required_error: "You need to select a transaction type.",
   }),
-  roomSelect: z.coerce.number().min(1, "Please select a room to display."),
+  serialNum: z.string().min(1, "Serial number cannot be blank"),
+  itemName: z.string().optional(),
+  quantity: z.coerce.number().optional(),
+  expiryDate: z
+    .date({
+      required_error: "An expiry date is required.",
+    })
+    .optional(),
+  roomSelect: z.coerce.number().nonnegative("Please select a room to display."),
 });
 
-export const CycleCount = () => {
+export const DeleteItem = () => {
   // Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,36 +72,49 @@ export const CycleCount = () => {
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     console.log(formData);
-    //!!! REMOVE AFTER AUTH SETUP WITH USERID!!!
-    const dataWithUserId = { ...formData, userId: 1 };
 
-    try {
-      const response = await axios.post(
-        `${BACKEND_URL}/additemcart`,
-        dataWithUserId
-      );
-      console.log(response.data);
-      form.formState.isSubmitSuccessful && form.reset();
-      toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(dataWithUserId, null, 2)}
-            </code>
-          </pre>
-        ),
-      });
-    } catch (error) {
-      toast({
-        title: "Failed",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{(error as Error).message}</code>
-          </pre>
-        ),
-      });
-      console.error("Error searching backend:", error as Error);
+    if (form.getValues("type") === "deleteroomitem") {
+      try {
+        const response = await axios.delete(`${BACKEND_URL}/deleteroomitem`, {
+          data: formData,
+        });
+        console.log(response.data);
+        toast({
+          title: "You submitted the following values:",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+              <code className="text-white">
+                {JSON.stringify(formData, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+        form.formState.isSubmitSuccessful && form.reset();
+      } catch (error) {
+        console.error("Error searching backend:", error);
+      }
+    }
+
+    if (form.getValues("type") === "deleteall") {
+      try {
+        const response = await axios.delete(`${BACKEND_URL}/deleteitem`, {
+          data: formData,
+        });
+        console.log(response.data);
+        toast({
+          title: "You submitted the following values:",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+              <code className="text-white">
+                {JSON.stringify(formData, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
+        form.formState.isSubmitSuccessful && form.reset();
+      } catch (error) {
+        console.error("Error searching backend:", error);
+      }
     }
   };
 
@@ -107,7 +124,7 @@ export const CycleCount = () => {
         `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
       );
       console.log(response.data);
-      form.setValue("itemName", response.data.serial_num);
+      form.setValue("itemName", response.data.item_name);
       form.setValue("quantity", response.data.roomItems[0].quantity);
       form.setValue(
         "expiryDate",
@@ -118,6 +135,17 @@ export const CycleCount = () => {
     }
   };
 
+  const selectedType = form.watch("type");
+
+  useEffect(() => {
+    if (selectedType) {
+      form.resetField("itemName");
+      form.resetField("serialNum");
+      form.resetField("quantity");
+      form.resetField("expiryDate");
+    }
+  }, [selectedType]);
+
   return (
     <>
       <Form {...form}>
@@ -125,7 +153,45 @@ export const CycleCount = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="pb-8 px-12 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-7"
         >
-          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 1</h3>
+          <h3 className="text-left sm:col-start-1 sm:col-span-3">Step 1</h3>
+
+          {/* Transaction Type Selection */}
+          <div className="mb-3 sm:col-start-1 sm:col-span-4">
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>Choose transaction type...</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex space-x-3"
+                    >
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="deleteroomitem" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Delete an item in a SINGLE room
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value="deleteall" />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Delete item in ALL rooms
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* SELECT ROOMS */}
           <div className="sm:col-start-1 sm:col-span-3">
@@ -214,6 +280,7 @@ export const CycleCount = () => {
               )}
             />
           </div>
+
           <div className="mt-8 sm:col-start-1 sm:col-span-7">
             <Separator />
           </div>
@@ -221,66 +288,26 @@ export const CycleCount = () => {
           <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 2</h3>
 
           <div className="sm:col-start-1 sm:col-span-3">
-            {!allItemsLoading && (
-              <FormField
-                control={form.control}
-                name="itemName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Select Item</FormLabel>
-                    <Select
-                      onValueChange={(selectedItem) => {
-                        field.onChange(selectedItem);
-                        form.setValue("serialNum", selectedItem);
-                        searchWithSerialNum(
-                          selectedItem,
-                          form.getValues("roomSelect")
-                        );
-                      }}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an item to display" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {/* Select Item Options */}
-                        {allItemsLoading && (
-                          <SelectItem value="loading" disabled>
-                            Loading items...
-                          </SelectItem>
-                        )}
-                        {!allItemsLoading && allItemsError && (
-                          <SelectItem value="error" disabled>
-                            Error loading items.
-                          </SelectItem>
-                        )}
-                        {!allItemsLoading &&
-                          !allItemsError &&
-                          allItems.map((item) => (
-                            <SelectItem key={item.id} value={item.serial_num}>
-                              {item.item_name}
-                            </SelectItem>
-                          ))}
-                        {!allItemsLoading &&
-                          !allItemsError &&
-                          !allItems.length && (
-                            <SelectItem value="no-items" disabled>
-                              No items available.
-                            </SelectItem>
-                          )}
-                      </SelectContent>
-                    </Select>
-
-                    <FormDescription>
-                      Select the item that you want to transact.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="itemName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Item Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Type in the item name"
+                      {...field}
+                      disabled
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Type the item name to be added.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
           <div className="sm:col-span-2">
@@ -291,7 +318,7 @@ export const CycleCount = () => {
                 <FormItem>
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
-                    <Input placeholder="Type here" {...field} type="number" />
+                    <Input placeholder="Type here" {...field} disabled />
                   </FormControl>
                   <FormDescription>
                     Quantity of item in location.
@@ -315,6 +342,7 @@ export const CycleCount = () => {
                       <FormControl>
                         <Button
                           variant={"outline"}
+                          disabled
                           className={cn(
                             "w-full pl-3 text-left font-normal",
                             !field.value && "text-muted-foreground"
@@ -356,7 +384,6 @@ export const CycleCount = () => {
           </div>
         </form>
       </Form>
-      <Cart onSuccessfulCheckout={() => form.reset()} />
     </>
   );
 };

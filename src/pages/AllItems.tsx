@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "../components/ui/table";
 
-export const AllItems = () => {
+export const AllItemsOLD = () => {
   const { allItems, error: allItemsError } = useAllItems();
   if (allItemsError) return <div>Error loading items.</div>;
   if (!allItems.length) return <div>Loading items...</div>;
@@ -28,7 +28,7 @@ export const AllItems = () => {
                 <TableHead>Item Name</TableHead>
                 <TableHead>Par Level</TableHead>
                 <TableHead>Room</TableHead>
-                <TableHead>Room Quantity</TableHead>
+                <TableHead>Quantity</TableHead>
                 <TableHead>Expiry Date</TableHead>
               </TableRow>
             </TableHeader>
@@ -46,16 +46,24 @@ export const AllItems = () => {
                   <TableCell>
                     {item.roomItems.map((roomItem) => (
                       <div key={roomItem.id}>
-                        {roomItem.quantity} {roomItem.uom}
+                        <p>
+                          {roomItem.quantity} {roomItem.uom}
+                        </p>
                       </div>
                     ))}
                   </TableCell>
                   <TableCell>
                     {item.roomItems.map((roomItem) => (
                       <div key={roomItem.id}>
-                        {roomItem.expiry_date
-                          ? new Date(roomItem.expiry_date).toLocaleDateString()
-                          : "N/A"}
+                        {roomItem.expiry_date ? (
+                          <p>
+                            {new Date(
+                              roomItem.expiry_date
+                            ).toLocaleDateString()}
+                          </p>
+                        ) : (
+                          "N/A"
+                        )}
                       </div>
                     ))}
                   </TableCell>

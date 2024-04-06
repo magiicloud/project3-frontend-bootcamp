@@ -1,6 +1,5 @@
 import React, { useState, MouseEventHandler, useEffect } from "react";
 import { cn } from "../lib/utils";
-import { buttonVariants } from "./ui/button";
 import RectangleSelection from "./rectangle-select";
 import { ChangeEvent } from "react";
 import {
@@ -16,6 +15,10 @@ import { Button } from "./ui/button";
 import { storage } from "../firebase";
 import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
+
+const successMessage: string =
+  "The new building has been recorded, close this dialog and head to the main page to view the new building!";
+const errorMessage: string = "Close this dialog and try again.";
 
 interface newRoom {
   top: number;
@@ -52,7 +55,9 @@ export const NewBuilding = () => {
   const [buildingImg, setBuildingImg] = useState<any>(undefined);
   const [buildingName, setBuildingName] = useState<string>("");
   const [mainDialog, setMainDialog] = useState<boolean>(false);
-  const [successDialog, setSuccessDialog] = useState<boolean>(false);
+  const [completeDialog, setCompleteDialog] = useState<boolean>(false);
+  const [completeDialogSuccess, setCompleteDialogSuccess] =
+    useState<boolean>(true);
   const [newRoomError, setNewRoomError] = useState<string>("");
   const [newBuildingError, setNewBuildingError] = useState<string>("");
 
@@ -63,6 +68,7 @@ export const NewBuilding = () => {
       width: -1,
       height: -1,
     });
+    setRooms([]);
     setBuildingImg(undefined);
     setBuildingName("");
     setBuilding({
@@ -82,7 +88,7 @@ export const NewBuilding = () => {
   };
 
   const emptyBuildingFields = () => {
-    return buildingImg || buildingName.length < 1 || rooms.length < 1;
+    return !buildingImg || buildingName.length < 1 || rooms.length < 1;
   };
 
   const handleNewRoom = () => {
@@ -115,7 +121,7 @@ export const NewBuilding = () => {
 
   const handleSuccess = () => {
     setMainDialog(false);
-    setSuccessDialog(false);
+    setCompleteDialog(false);
     window.location.reload();
   };
 
@@ -214,11 +220,13 @@ export const NewBuilding = () => {
       .post("http://localhost:3000/buildings", data)
       .then((response) => {
         console.log(response.data);
+        setCompleteDialogSuccess(true);
       })
       .catch((error) => {
         console.error(error);
+        setCompleteDialogSuccess(false);
       });
-    setSuccessDialog(true);
+    setCompleteDialog(true);
   };
 
   const handleSubmit: MouseEventHandler<HTMLButtonElement> = () => {
@@ -301,9 +309,9 @@ export const NewBuilding = () => {
                 value={newRoomName}
                 onChange={(e) => handleChange(e, setNewRoomName)}
               ></input>
-              <button className="inline-block ml-3" onClick={handleNewRoom}>
+              <Button className="inline-block ml-3" onClick={handleNewRoom}>
                 Add room
-              </button>
+              </Button>
             </div>
             {newRoomError && (
               <span className="text-center text-red-500">{newRoomError}</span>
@@ -313,16 +321,19 @@ export const NewBuilding = () => {
                 {newBuildingError}
               </span>
             )}
-            <button onClick={handleSubmit}>Create new building</button>
+            <Button onClick={handleSubmit}>Create new building</Button>
           </DialogHeader>
         </DialogContent>
       </Dialog>
-      <Dialog open={successDialog} onOpenChange={setSuccessDialog}>
+      <Dialog open={completeDialog} onOpenChange={setCompleteDialog}>
         <DialogContent className="w-[50%]">
-          <DialogTitle>Success!</DialogTitle>
+          <DialogTitle>
+            {completeDialogSuccess
+              ? "Success!"
+              : "Looks like something went wrong"}
+          </DialogTitle>
           <DialogDescription>
-            The new building has been recorded, close this dialog and head to
-            the main page to view the new building!
+            {completeDialogSuccess ? successMessage : errorMessage}
           </DialogDescription>
           <Button onClick={handleSuccess}>Close</Button>
         </DialogContent>

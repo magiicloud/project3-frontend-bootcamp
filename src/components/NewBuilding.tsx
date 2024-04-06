@@ -1,6 +1,5 @@
-import React, { useState, MouseEventHandler } from "react";
+import React, { useState, MouseEventHandler, useEffect } from "react";
 import { cn } from "../lib/utils";
-import { buttonVariants } from "./ui/button";
 import RectangleSelection from "./rectangle-select";
 import { ChangeEvent } from "react";
 import {
@@ -16,6 +15,10 @@ import { Button } from "./ui/button";
 import { storage } from "../firebase";
 import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
+
+const successMessage: string =
+  "The new building has been recorded, close this dialog and head to the main page to view the new building!";
+const errorMessage: string = "Close this dialog and try again.";
 
 interface newRoom {
   top: number;
@@ -52,9 +55,51 @@ export const NewBuilding = () => {
   const [buildingImg, setBuildingImg] = useState<any>(undefined);
   const [buildingName, setBuildingName] = useState<string>("");
   const [mainDialog, setMainDialog] = useState<boolean>(false);
-  const [successDialog, setSuccessDialog] = useState<boolean>(false);
+  const [completeDialog, setCompleteDialog] = useState<boolean>(false);
+  const [completeDialogSuccess, setCompleteDialogSuccess] =
+    useState<boolean>(true);
+  const [newRoomError, setNewRoomError] = useState<string>("");
+  const [newBuildingError, setNewBuildingError] = useState<string>("");
 
-  const handleClick = () => {
+  useEffect(() => {
+    setNewBox({
+      top: -1,
+      left: -1,
+      width: -1,
+      height: -1,
+    });
+    setRooms([]);
+    setBuildingImg(undefined);
+    setBuildingName("");
+    setBuilding({
+      height: 0,
+      width: 0,
+      image: "",
+    });
+    setNewBuildingError("");
+    setNewRoomError("");
+    setNewRoomName("");
+  }, [mainDialog]);
+
+  const noNewRoom = () => {
+    return (
+      newBox.top < 0 || newBox.left < 0 || newBox.width < 0 || newBox.height < 0
+    );
+  };
+
+  const emptyBuildingFields = () => {
+    return !buildingImg || buildingName.length < 1 || rooms.length < 1;
+  };
+
+  const handleNewRoom = () => {
+    if (noNewRoom()) {
+      return setNewRoomError(
+        "Please create a room in the building before adding"
+      );
+    }
+    if (newRoomName.length < 1) {
+      return setNewRoomError("Please specify room name before creating");
+    }
     const newRooms = [...rooms];
     const newRoom: newRoom = { ...newBox, name: "" };
     newRoom.name = newRoomName;
@@ -66,6 +111,7 @@ export const NewBuilding = () => {
       width: -1,
       height: -1,
     });
+    setNewRoomError("");
     setNewRoomName("");
   };
 
@@ -75,7 +121,7 @@ export const NewBuilding = () => {
 
   const handleSuccess = () => {
     setMainDialog(false);
-    setSuccessDialog(false);
+    setCompleteDialog(false);
     window.location.reload();
   };
 
@@ -174,14 +220,21 @@ export const NewBuilding = () => {
       .post("http://localhost:3000/buildings", data)
       .then((response) => {
         console.log(response.data);
+        setCompleteDialogSuccess(true);
       })
       .catch((error) => {
         console.error(error);
+        setCompleteDialogSuccess(false);
       });
-    setSuccessDialog(true);
+    setCompleteDialog(true);
   };
 
-  const uploadImage: MouseEventHandler<HTMLButtonElement> = () => {
+  const handleSubmit: MouseEventHandler<HTMLButtonElement> = () => {
+    if (emptyBuildingFields()) {
+      return setNewBuildingError(
+        "Please fill in all fields before creating a new building"
+      );
+    }
     const floorplanImgRef = sRef(storage, `/buildings/${buildingName}`);
     uploadBytes(floorplanImgRef, buildingImg).then(() => {
       const url = getDownloadURL(floorplanImgRef);
@@ -193,7 +246,7 @@ export const NewBuilding = () => {
 
   return (
     <>
-      <Dialog open={mainDialog} onOpenChange={setMainDialog}>
+      <Dialog open={mainDialog} onOpenChange={setMainDialog} defaultOpen>
         <DialogTrigger>Add new building</DialogTrigger>
         <DialogContent
           style={{
@@ -208,17 +261,22 @@ export const NewBuilding = () => {
               Highlight areas of the image and input the name to preview the new
               room. Click "Add" to add the room.
             </DialogDescription>
-            <label className="inline">Building Image:</label>
-            <input
-              className="inline"
-              type="file"
-              onChange={(e) => handleFile(e)}
-            ></input>
-            <label className="inline">Building Name:</label>
-            <input
-              type="text"
-              onChange={(e) => handleChange(e, setBuildingName)}
-            ></input>
+            <div>
+              Building Image:
+              <input
+                className="inline-block min-w-min ml-3"
+                type="file"
+                onChange={(e) => handleFile(e)}
+              ></input>
+            </div>
+            <div>
+              Building Name:
+              <input
+                className="inline-block min-w-min ml-3 px-1 border border-gray-500 rounded-md"
+                type="text"
+                onChange={(e) => handleChange(e, setBuildingName)}
+              ></input>
+            </div>
             <RectangleSelection
               id="building-highlight"
               onSelect={(e, coords) => {
@@ -244,22 +302,38 @@ export const NewBuilding = () => {
                 {boxInProg()}
               </div>
             </RectangleSelection>
-            <label>Room Name: </label>
-            <input
-              value={newRoomName}
-              onChange={(e) => handleChange(e, setNewRoomName)}
-            ></input>
-            <button onClick={handleClick}>Add room</button>
-            <button onClick={uploadImage}>Create new building</button>
+            <div>
+              Room Name:
+              <input
+                className="inline-block min-w-min ml-3 px-1 border border-gray-500 rounded-md"
+                value={newRoomName}
+                onChange={(e) => handleChange(e, setNewRoomName)}
+              ></input>
+              <Button className="inline-block ml-3" onClick={handleNewRoom}>
+                Add room
+              </Button>
+            </div>
+            {newRoomError && (
+              <span className="text-center text-red-500">{newRoomError}</span>
+            )}
+            {newBuildingError && (
+              <span className="text-center text-red-500">
+                {newBuildingError}
+              </span>
+            )}
+            <Button onClick={handleSubmit}>Create new building</Button>
           </DialogHeader>
         </DialogContent>
       </Dialog>
-      <Dialog open={successDialog} onOpenChange={setSuccessDialog}>
+      <Dialog open={completeDialog} onOpenChange={setCompleteDialog}>
         <DialogContent className="w-[50%]">
-          <DialogTitle>Success!</DialogTitle>
+          <DialogTitle>
+            {completeDialogSuccess
+              ? "Success!"
+              : "Looks like something went wrong"}
+          </DialogTitle>
           <DialogDescription>
-            The new building has been recorded, close this dialog and head to
-            the main page to view the new building!
+            {completeDialogSuccess ? successMessage : errorMessage}
           </DialogDescription>
           <Button onClick={handleSuccess}>Close</Button>
         </DialogContent>

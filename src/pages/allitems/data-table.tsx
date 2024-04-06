@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { Separator } from "../../components/ui/separator";
+import { Search } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -69,29 +70,35 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div>
+    <>
       <div className="flex items-center py-4 gap-1.5">
-        <Input
-          placeholder="Search serial number..."
-          value={
-            (table.getColumn("serial_num")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("serial_num")?.setFilterValue(event.target.value)
-          }
-          className="max-w-48"
-        />
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Serial number..."
+            value={
+              (table.getColumn("serial_num")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("serial_num")?.setFilterValue(event.target.value)
+            }
+            className="w-full appearance-none bg-background pl-8 shadow-none"
+          />
+        </div>
         <Separator orientation="vertical" className="h-8 mx-2" />
-        <Input
-          placeholder="Search item name..."
-          value={
-            (table.getColumn("item_name")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("item_name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-48"
-        />
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search item name..."
+            value={
+              (table.getColumn("item_name")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("item_name")?.setFilterValue(event.target.value)
+            }
+            className="w-full appearance-none bg-background pl-8 shadow-none"
+          />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -192,6 +199,6 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
-    </div>
+    </>
   );
 }

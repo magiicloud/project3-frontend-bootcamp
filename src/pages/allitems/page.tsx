@@ -25,7 +25,7 @@ export const AllItems = () => {
   return (
     <>
       <h2 className="px-3 mt-5">All Items</h2>
-      <div className="container mx-0 px-3 py-0">
+      <div className="grid grid-cols-1 mx-0 px-3 py-0">
         <DataTable columns={columns} data={data} />
       </div>
     </>

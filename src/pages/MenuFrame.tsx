@@ -28,7 +28,7 @@ import { Input } from "../components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
 
 export const MenuFrame = () => {
-  const { logout } = useAuth0();
+  const { logout, user } = useAuth0();
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
@@ -178,6 +178,9 @@ export const MenuFrame = () => {
                 />
               </div>
             </form>
+            {/* <div className="w-full flex-1 text-muted-foreground font-semibold">
+              <h3>{`Hello ${user?.name}! ${user?.sub}`} </h3>
+            </div> */}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { useAllItems, useRooms } from "../hooks/useFetchFormData";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 
 const formSchema = z.object({
   type: z.enum(["deleteroomitem", "deleteall", "move"], {
@@ -62,7 +63,7 @@ export const DeleteItem = () => {
       roomSelect: 0,
     },
   });
-
+  const sendRequest = useAuthenticatedRequest();
   const { rooms, error: roomsError, isLoading: roomsLoading } = useRooms();
   const {
     allItems,
@@ -75,7 +76,11 @@ export const DeleteItem = () => {
 
     if (form.getValues("type") === "deleteroomitem") {
       try {
-        const response = await axios.delete(`${BACKEND_URL}/deleteroomitem`, {
+        // const response = await axios.delete(`${BACKEND_URL}/deleteroomitem`, {
+        //   data: formData,
+        // });
+        const response = await sendRequest(`/deleteroomitem/`, {
+          method: "DELETE",
           data: formData,
         });
         console.log(response.data);
@@ -97,7 +102,11 @@ export const DeleteItem = () => {
 
     if (form.getValues("type") === "deleteall") {
       try {
-        const response = await axios.delete(`${BACKEND_URL}/deleteitem`, {
+        // const response = await axios.delete(`${BACKEND_URL}/deleteitem`, {
+        //   data: formData,
+        // });
+        const response = await sendRequest(`/deleteitem/`, {
+          method: "DELETE",
           data: formData,
         });
         console.log(response.data);
@@ -120,8 +129,12 @@ export const DeleteItem = () => {
 
   const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
     try {
-      const response = await axios.get(
-        `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
+      // const response = await axios.get(
+      //   `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
+      // );
+      const response = await sendRequest(
+        `/findserial/${serialNum}/${selectRoom}`,
+        { method: "GET" }
       );
       console.log(response.data);
       form.setValue("itemName", response.data.item_name);

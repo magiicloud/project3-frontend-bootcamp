@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "../constants";
 import axios, { AxiosError } from "axios";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 import { toast } from "../components/ui/use-toast";
 import { Button } from "../components/ui/button";
 import { TrashIcon } from "@radix-ui/react-icons";
@@ -68,11 +69,18 @@ const popupToast = (errTitle: string, descriptionJson: string) => {
 export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [rooms, setRooms] = useState<Rooms[]>([]);
+  const sendRequest = useAuthenticatedRequest();
 
   const openCart = async () => {
     try {
-      const activecart = await axios.get(`${BACKEND_URL}/getactivecart`);
-      const roomlist = await axios.get(`${BACKEND_URL}/allrooms`);
+      // const activecart = await axios.get(`${BACKEND_URL}/getactivecart`);
+      const activecart = await sendRequest(`/getactivecart/`, {
+        method: "GET",
+      });
+      // const roomlist = await axios.get(`${BACKEND_URL}/allrooms`);
+      const roomlist = await sendRequest(`/allrooms/`, {
+        method: "GET",
+      });
       console.log(activecart.data.cartLineItems);
       setCartItems(activecart.data.cartLineItems);
       console.log(roomlist.data);
@@ -108,7 +116,10 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
 
   const checkout = async () => {
     try {
-      const submit = await axios.put(`${BACKEND_URL}/checkoutcyclecount`);
+      // const submit = await axios.put(`${BACKEND_URL}/checkoutcyclecount`);
+      const submit = await sendRequest(`/checkoutcyclecount/`, {
+        method: "PUT",
+      });
       toast({
         title: "Checkout success",
         description: (

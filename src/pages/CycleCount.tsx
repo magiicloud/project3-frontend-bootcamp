@@ -147,7 +147,9 @@ export const CycleCount = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="pb-8 px-12 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-7"
         >
-          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 1</h3>
+          <h3 className="text-left text-primary font-bold text-xl mt-5 sm:col-start-1 sm:col-span-4">
+            Step 1
+          </h3>
 
           {/* SELECT ROOMS */}
           <div className="sm:col-start-1 sm:col-span-3">
@@ -240,7 +242,9 @@ export const CycleCount = () => {
             <Separator />
           </div>
 
-          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 2</h3>
+          <h3 className="text-left text-primary font-bold text-xl sm:col-start-1 sm:col-span-4">
+            Step 2
+          </h3>
 
           <div className="sm:col-start-1 sm:col-span-3">
             {!allItemsLoading && (

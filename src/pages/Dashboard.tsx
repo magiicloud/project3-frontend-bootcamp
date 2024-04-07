@@ -5,7 +5,6 @@ import {
   Clock4Icon,
   Building,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
@@ -18,6 +17,10 @@ import {
 } from "../components/ui/card";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
 import { BuildingsList } from "../components/BuildingsList";
+import {
+  generateExpItemExcel,
+  generateParItemExcel,
+} from "../components/utils/generateExcel";
 
 interface ExpItem {
   id: number;
@@ -85,12 +88,12 @@ export const Dashboard = () => {
 
   return (
     <>
-      <h2 className="px-8 mt-2 mb-0">Dashboard</h2>
+      {/* <h2 className="px-8 mt-2 mb-0">Dashboard</h2> */}
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium">
+              <CardTitle className="text-md font-medium text-primary">
                 Short Expiry Items
               </CardTitle>
               <Clock4Icon className="h-4 w-4 text-muted-foreground" />
@@ -104,7 +107,7 @@ export const Dashboard = () => {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium">
+              <CardTitle className="text-md font-medium text-primary">
                 Near Par Items
               </CardTitle>
               <BatteryLowIcon className="h-4 w-4 text-muted-foreground" />
@@ -118,7 +121,7 @@ export const Dashboard = () => {
           </Card>
           <Card className="md:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium">
+              <CardTitle className="text-md font-medium text-primary">
                 Current Building
               </CardTitle>
               <Building className="h-4 w-4 text-muted-foreground" />
@@ -132,23 +135,29 @@ export const Dashboard = () => {
           <Card className="2xl:col-span-2"> */}
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
           <Card>
-            <CardHeader className="flex flex-row items-center">
-              <div className="grid gap-2">
-                <CardTitle>Items to Reorder</CardTitle>
+            <CardHeader className="flex flex-row items-top">
+              <div className="grid gap-2 mb-6">
+                <CardTitle className="text-primary font-medium">
+                  Items to Reorder
+                </CardTitle>
                 <CardDescription>
                   Items with less than 50% par level
                 </CardDescription>
               </div>
-              <Button asChild size="sm" className="ml-auto gap-1">
-                <Link to="../allitems">
-                  Download
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
+              <Button
+                size="sm"
+                className="ml-auto gap-1"
+                onClick={() => {
+                  generateParItemExcel(parItems);
+                }}
+              >
+                Download
+                <ArrowUpRight className="h-4 w-4" />
               </Button>
             </CardHeader>
             {parItems &&
               parItems.map((item, index) => (
-                <CardContent className="grid gap-8 mb-10">
+                <CardContent className="grid gap-8 mb-6">
                   <div className="flex items-center gap-4">
                     <Avatar className="hidden h-9 w-9 sm:flex">
                       <AvatarImage src="/avatars/03.png" alt="Avatar" />
@@ -176,20 +185,26 @@ export const Dashboard = () => {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center">
+            <CardHeader className="flex flex-row items-top mb-6">
               <div className="grid gap-2">
-                <CardTitle>Short Expiry</CardTitle>
+                <CardTitle className="text-primary font-medium">
+                  Short Expiry
+                </CardTitle>
                 <CardDescription>Items expiring in 6 months</CardDescription>
               </div>
-              <Button asChild size="sm" className="ml-auto gap-1">
-                <Link to="../allitems">
-                  Download
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
+              <Button
+                size="sm"
+                className="ml-auto gap-1"
+                onClick={() => {
+                  generateExpItemExcel(expItems);
+                }}
+              >
+                Download
+                <ArrowUpRight className="h-4 w-4" />
               </Button>
             </CardHeader>
             {expItems.map((item, index) => (
-              <CardContent className="grid gap-8 mb-10">
+              <CardContent className="grid gap-8 mb-6">
                 <div className="flex items-center gap-4">
                   <Avatar className="hidden h-9 w-9 sm:flex">
                     <AvatarImage src="/avatars/03.png" alt="Avatar" />

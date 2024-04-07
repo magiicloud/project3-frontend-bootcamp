@@ -265,7 +265,7 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
           </SheetTrigger>
           <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px]">
             <SheetHeader>
-              <SheetTitle>Transactions</SheetTitle>
+              <SheetTitle className="text-primary">Transactions</SheetTitle>
             </SheetHeader>
             <div className="py-8">
               <CheckoutCart />

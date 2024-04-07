@@ -49,6 +49,10 @@ interface Rooms {
   name: string;
 }
 
+interface CartLineItemId {
+  cartLineItemId: number;
+}
+
 interface CheckoutSuccess {
   onSuccessfulCheckout?: () => void;
 }
@@ -162,6 +166,53 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
     }
   };
 
+  const deleteItem = async (cartLineItemId: CartLineItemId) => {
+    try {
+      const submit = await sendRequest(`/deleteitemincart/`, {
+        method: "DELETE",
+        data: cartLineItemId,
+      });
+      toast({
+        title: "Item deleted",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              <p>Item deleted succesfully!</p>
+            </code>
+          </pre>
+        ),
+      });
+      openCart();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Check if the error is an Axios error
+        const serverError = error.response;
+
+        if (serverError) {
+          // Access detailed error information
+          console.error(
+            "Error deleting item:",
+            serverError.status,
+            serverError.data
+          );
+          popupToast(
+            `Error deleting item: Status ${serverError.status}`,
+            `${serverError.data.message}`
+          );
+        } else {
+          // Error does not have a response (network error, timeout, etc)
+          console.error("Error deleting item:", error.message);
+          popupToast("Error deleting item", `${error.message}`);
+        }
+      } else {
+        // Error is not from Axios
+        console.error("Non-Axios error:", error);
+        popupToast("Error deleting item", `${error}`);
+      }
+    }
+  };
+  console.log(cartItems);
+
   const CheckoutCart = () => {
     return (
       <Table>
@@ -182,7 +233,12 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
                 <TableCell>{room ? room.name : "Room not found"}</TableCell>
                 <TableCell>{cartItem.quantity}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant={"ghost"}>
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => {
+                      deleteItem({ cartLineItemId: cartItem.id });
+                    }}
+                  >
                     <TrashIcon />
                   </Button>
                 </TableCell>

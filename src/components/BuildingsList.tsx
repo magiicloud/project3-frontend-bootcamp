@@ -1,6 +1,5 @@
-import React, { EffectCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
-import { buttonVariants } from "./ui/button";
 import { SetStateAction } from "react";
 import {
   Dialog,
@@ -35,13 +34,14 @@ interface building {
   rooms: room[];
 }
 
-interface CustomProp {
+interface BuildingListProps {
   setRoom: React.Dispatch<React.SetStateAction<RoomObject>>;
+  refresh: boolean;
 }
 
 type buildingList = building[];
 
-export const BuildingsList: React.FC<CustomProp> = (props) => {
+export const BuildingsList: React.FC<BuildingListProps> = (props) => {
   const [buildings, setBuildings] = useState<buildingList>([]);
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
 
@@ -56,7 +56,7 @@ export const BuildingsList: React.FC<CustomProp> = (props) => {
 
   useEffect(() => {
     fetchBuildings();
-  }, []);
+  }, [props.refresh]);
 
   useEffect(() => {
     const buildingLineItems: unknown = buildings.map((building, index) => {
@@ -129,6 +129,6 @@ export const BuildingsList: React.FC<CustomProp> = (props) => {
       );
     });
     setBuildingLineItem(buildingLineItems as SetStateAction<React.JSX.Element>);
-  }, [buildings]);
+  }, [buildings, props]);
   return <div>{buildingLineItem}</div>;
 };

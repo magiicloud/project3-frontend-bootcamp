@@ -15,10 +15,16 @@ import { Button } from "./ui/button";
 import { storage } from "../firebase";
 import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
+import { Proportions } from "lucide-react";
 
 const successMessage: string =
   "The new building has been recorded, close this dialog and head to the main page to view the new building!";
 const errorMessage: string = "Close this dialog and try again.";
+
+interface NewBuildingProps {
+  refresh: boolean;
+  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 interface newRoom {
   top: number;
@@ -38,7 +44,7 @@ interface building {
 type buildings = building;
 type rooms = newRoom[];
 
-export const NewBuilding = () => {
+export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
   const [rooms, setRooms] = useState<rooms>([]);
   const [newBox, setNewBox] = useState({
     top: -1,
@@ -122,7 +128,7 @@ export const NewBuilding = () => {
   const handleSuccess = () => {
     setMainDialog(false);
     setCompleteDialog(false);
-    window.location.reload();
+    props.setRefresh(!props.refresh);
   };
 
   const parentWidth = (elem: HTMLElement | null) => {

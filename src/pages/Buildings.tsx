@@ -13,6 +13,7 @@ export interface RoomObject {
 
 export const Buildings = () => {
   const [room, setRoom] = useState<RoomObject>({});
+  const [refresh, setRefresh] = useState<boolean>(false);
   return (
     <>
       <div className="prose max-w-none">
@@ -21,8 +22,8 @@ export const Buildings = () => {
         ) : (
           <>
             <h2 className="px-3 mt-5">Buildings</h2>
-            <NewBuilding />
-            <BuildingsList setRoom={setRoom} />
+            <NewBuilding refresh={refresh} setRefresh={setRefresh} />
+            <BuildingsList setRoom={setRoom} refresh={refresh} />
           </>
         )}
       </div>

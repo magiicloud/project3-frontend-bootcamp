@@ -1,8 +1,6 @@
-import React, { EffectCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "../lib/utils";
-import { buttonVariants } from "./ui/button";
 import { SetStateAction } from "react";
-import { BACKEND_URL } from "../constants";
 import {
   Dialog,
   DialogTrigger,
@@ -11,10 +9,12 @@ import {
   DialogTitle,
   DialogDescription,
 } from "./ui/dialog";
+import { RoomObject } from "../pages/Buildings";
+import axios from "axios";
 
 interface room {
   id: number;
-  name: number;
+  name: string;
   left: number;
   top: number;
   height: number;
@@ -34,24 +34,29 @@ interface building {
   rooms: room[];
 }
 
+interface BuildingListProps {
+  setRoom: React.Dispatch<React.SetStateAction<RoomObject>>;
+  refresh: boolean;
+}
+
 type buildingList = building[];
 
-export const BuildingsList = () => {
+export const BuildingsList: React.FC<BuildingListProps> = (props) => {
   const [buildings, setBuildings] = useState<buildingList>([]);
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
 
   const fetchBuildings = async () => {
-    const fetchedBuildings = await fetch("http://localhost:3000/buildings", {
-      method: "get",
-    });
-    const fetchedBuildingsJson = await fetchedBuildings.json();
-    setBuildings(fetchedBuildingsJson as buildingList);
+    const fetchedBuildings = await axios.get(
+      process.env.REACT_APP_BACKEND_URL + "/buildings"
+    );
+    const fetchedBuildingsData = await fetchedBuildings.data;
+    setBuildings(fetchedBuildingsData as buildingList);
     return undefined;
   };
 
   useEffect(() => {
     fetchBuildings();
-  }, []);
+  }, [props.refresh]);
 
   useEffect(() => {
     const buildingLineItems: unknown = buildings.map((building, index) => {
@@ -59,6 +64,13 @@ export const BuildingsList = () => {
         <div
           key={index}
           className="absolute"
+          onClick={() =>
+            props.setRoom({
+              id: room.id,
+              name: room.name,
+              building: building.name,
+            })
+          }
           style={Object.assign({
             zIndex: 10,
             left: room.left + "%",
@@ -77,12 +89,14 @@ export const BuildingsList = () => {
       return (
         <Dialog key={index}>
           <DialogTrigger className="w-full">
-            <div className="h-[150px] border-t border-b border-gray-500 w-full flex flex-row">
-              <img
-                className="m-1 h-inherit"
-                src={building.building_img_url}
-                alt="building preview"
-              />
+            <div className="border-t border-b border-gray-500 w-full flex flex-row">
+              <div className="h-[150px] w-[250px] m-1 flex justify-center items-center">
+                <img
+                  className="m-0 max-w-full max-h-full"
+                  src={building.building_img_url}
+                  alt="building preview"
+                />
+              </div>
               <div className="flex items-center ml-5">
                 <h1 key={index} className="prose m-0">
                   Building Name: {building.name}
@@ -115,6 +129,6 @@ export const BuildingsList = () => {
       );
     });
     setBuildingLineItem(buildingLineItems as SetStateAction<React.JSX.Element>);
-  }, [buildings]);
+  }, [buildings, props]);
   return <div>{buildingLineItem}</div>;
 };

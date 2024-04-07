@@ -13,7 +13,7 @@ export const Login = () => {
     const checkUser = async () => {
       if (isAuthenticated) {
         await getAccessTokenSilently();
-        navigate("/landing/allitems");
+        navigate("/landing/dashboard");
       }
     };
 

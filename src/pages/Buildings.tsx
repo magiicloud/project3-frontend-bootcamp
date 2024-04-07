@@ -5,16 +5,22 @@ import { NewBuilding } from "../components/NewBuilding";
 import { BuildingsList } from "../components/BuildingsList";
 import { Room } from "./Room";
 
+export interface RoomObject {
+  id?: number;
+  name?: string;
+  building?: string;
+}
+
 export const Buildings = () => {
-  const [room, setRoom] = useState<boolean | number>(false);
+  const [room, setRoom] = useState<RoomObject>({});
   return (
     <>
       <div className="prose max-w-none">
-        {room ? (
-          <Room roomId={room} setRoomId={setRoom} />
+        {Object.keys(room).length > 0 ? (
+          <Room room={room} setRoom={setRoom} />
         ) : (
           <>
-            <h1 className="px-3 mt-5">Buildings</h1>
+            <h2 className="px-3 mt-5">Buildings</h2>
             <NewBuilding />
             <BuildingsList setRoom={setRoom} />
           </>

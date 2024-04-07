@@ -10,11 +10,12 @@ import {
   DialogTitle,
   DialogDescription,
 } from "./ui/dialog";
+import { RoomObject } from "../pages/Buildings";
 import axios from "axios";
 
 interface room {
   id: number;
-  name: number;
+  name: string;
   left: number;
   top: number;
   height: number;
@@ -35,7 +36,7 @@ interface building {
 }
 
 interface CustomProp {
-  setRoom: React.Dispatch<React.SetStateAction<number | boolean>>;
+  setRoom: React.Dispatch<React.SetStateAction<RoomObject>>;
 }
 
 type buildingList = building[];
@@ -63,7 +64,13 @@ export const BuildingsList: React.FC<CustomProp> = (props) => {
         <div
           key={index}
           className="absolute"
-          onClick={() => props.setRoom(room.id)}
+          onClick={() =>
+            props.setRoom({
+              id: room.id,
+              name: room.name,
+              building: building.name,
+            })
+          }
           style={Object.assign({
             zIndex: 10,
             left: room.left + "%",
@@ -82,12 +89,14 @@ export const BuildingsList: React.FC<CustomProp> = (props) => {
       return (
         <Dialog key={index}>
           <DialogTrigger className="w-full">
-            <div className="h-[150px] border-t border-b border-gray-500 w-full flex flex-row">
-              <img
-                className="m-1 h-inherit"
-                src={building.building_img_url}
-                alt="building preview"
-              />
+            <div className="border-t border-b border-gray-500 w-full flex flex-row">
+              <div className="h-[150px] w-[250px] m-1 flex justify-center items-center">
+                <img
+                  className="m-0 max-w-full max-h-full"
+                  src={building.building_img_url}
+                  alt="building preview"
+                />
+              </div>
               <div className="flex items-center ml-5">
                 <h1 key={index} className="prose m-0">
                   Building Name: {building.name}

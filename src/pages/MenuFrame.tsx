@@ -11,6 +11,7 @@ import {
   Search,
   ShoppingCart,
   Users,
+  Building2,
 } from "lucide-react";
 import { Link, Outlet, NavLink } from "react-router-dom";
 import { Badge } from "../components/ui/badge";
@@ -86,7 +87,7 @@ export const MenuFrame = () => {
                   }`
                 }
               >
-                <Users className="h-4 w-4" />
+                <Building2 className="h-4 w-4" />
                 Buildings
               </NavLink>
               <NavLink

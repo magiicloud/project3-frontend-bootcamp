@@ -14,6 +14,9 @@ root.render(
     clientId={process.env.REACT_APP_AUTH_CLIENT_ID!}
     authorizationParams={{
       redirect_uri: window.location.origin,
+      audience: process.env.REACT_APP_AUTH_API!,
+      scope:
+        "openid profile email read:current_user update:current_user_metadata",
     }}
     useRefreshTokens={true}
     cacheLocation="localstorage"

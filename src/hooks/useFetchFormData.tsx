@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { BACKEND_URL } from "../constants";
+import { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 
 export const useRooms = () => {
   interface Room {
@@ -11,13 +11,15 @@ export const useRooms = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const sendRequest = useAuthenticatedRequest();
 
   useEffect(() => {
     setIsLoading(true);
+
     const fetchRooms = async () => {
       try {
-        const response = await axios.get(`${BACKEND_URL}/allrooms/`);
-        setRooms(response.data);
+        const roomsData = await sendRequest("/allrooms/", { method: "GET" });
+        setRooms(roomsData.data);
         setIsLoading(false);
       } catch (err) {
         console.error(err);
@@ -53,12 +55,13 @@ export const useAllItems = () => {
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const sendRequest = useAuthenticatedRequest();
 
   useEffect(() => {
     const fetchAllItems = async () => {
       setIsLoading(true);
       try {
-        const allItemsData = await axios.get(`${BACKEND_URL}/allitems/`);
+        const allItemsData = await sendRequest("/allitems/", { method: "GET" });
         setAllItems(allItemsData.data);
         setIsLoading(false);
       } catch (err) {

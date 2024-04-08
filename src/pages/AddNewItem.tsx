@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { cn } from "../lib/utils";
 import { BACKEND_URL } from "../constants";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -61,10 +62,30 @@ export const AddNewItem = () => {
     },
   });
 
+  // const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
+  //     );
+  //     console.log(response.data);
+  //     form.setValue("itemName", response.data.item_name);
+  //     form.setValue("uom", response.data.roomItems[0].uom);
+  //     form.setValue(
+  //       "expiryDate",
+  //       new Date(response.data.roomItems[0].expiry_date)
+  //     );
+  //   } catch (error) {
+  //     console.error("Error searching backend:", error);
+  //   }
+  // };
+
+  const sendRequest = useAuthenticatedRequest();
+
   const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
     try {
-      const response = await axios.get(
-        `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
+      const response = await sendRequest(
+        `/findserial/${serialNum}/${selectRoom}`,
+        { method: "GET" }
       );
       console.log(response.data);
       form.setValue("itemName", response.data.item_name);
@@ -81,10 +102,13 @@ export const AddNewItem = () => {
   const { rooms, error: roomsError, isLoading: roomsLoading } = useRooms();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    console.log("hello");
     console.log(formData);
     try {
-      const response = await axios.post(`${BACKEND_URL}/addnewitem`, formData);
+      // const response = await axios.post(`${BACKEND_URL}/addnewitem`, formData);
+      const response = await sendRequest(`/addnewitem/`, {
+        method: "POST",
+        data: formData,
+      });
       console.log(response.data);
       form.formState.isSubmitSuccessful && form.reset();
       toast({
@@ -111,7 +135,9 @@ export const AddNewItem = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="pb-8 px-12 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-7"
         >
-          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 1</h3>
+          <h3 className="text-left text-primary font-bold text-xl mt-5 sm:col-start-1 sm:col-span-4">
+            Step 1
+          </h3>
 
           {/* SELECT ROOMS */}
           <div className="sm:col-start-1 sm:col-span-3">
@@ -223,7 +249,9 @@ export const AddNewItem = () => {
             <Separator />
           </div>
 
-          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 2</h3>
+          <h3 className="text-primary text-left font-bold text-xl sm:col-start-1 sm:col-span-4">
+            Step 2
+          </h3>
 
           <div className="sm:col-start-1 sm:col-span-2">
             <FormField

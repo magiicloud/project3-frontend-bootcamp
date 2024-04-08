@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BACKEND_URL } from "../constants";
 import axios, { AxiosError } from "axios";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 import { toast } from "../components/ui/use-toast";
 import { Button } from "../components/ui/button";
 import { TrashIcon } from "@radix-ui/react-icons";
@@ -48,6 +49,10 @@ interface Rooms {
   name: string;
 }
 
+interface CartLineItemId {
+  cartLineItemId: number;
+}
+
 interface CheckoutSuccess {
   onSuccessfulCheckout?: () => void;
 }
@@ -68,11 +73,18 @@ const popupToast = (errTitle: string, descriptionJson: string) => {
 export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [rooms, setRooms] = useState<Rooms[]>([]);
+  const sendRequest = useAuthenticatedRequest();
 
   const openCart = async () => {
     try {
-      const activecart = await axios.get(`${BACKEND_URL}/getactivecart`);
-      const roomlist = await axios.get(`${BACKEND_URL}/allrooms`);
+      // const activecart = await axios.get(`${BACKEND_URL}/getactivecart`);
+      const activecart = await sendRequest(`/getactivecart/`, {
+        method: "GET",
+      });
+      // const roomlist = await axios.get(`${BACKEND_URL}/allrooms`);
+      const roomlist = await sendRequest(`/allrooms/`, {
+        method: "GET",
+      });
       console.log(activecart.data.cartLineItems);
       setCartItems(activecart.data.cartLineItems);
       console.log(roomlist.data);
@@ -108,7 +120,10 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
 
   const checkout = async () => {
     try {
-      const submit = await axios.put(`${BACKEND_URL}/checkoutcyclecount`);
+      // const submit = await axios.put(`${BACKEND_URL}/checkoutcyclecount`);
+      const submit = await sendRequest(`/checkoutcyclecount/`, {
+        method: "PUT",
+      });
       toast({
         title: "Checkout success",
         description: (
@@ -151,6 +166,53 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
     }
   };
 
+  const deleteItem = async (cartLineItemId: CartLineItemId) => {
+    try {
+      const submit = await sendRequest(`/deleteitemincart/`, {
+        method: "DELETE",
+        data: cartLineItemId,
+      });
+      toast({
+        title: "Item deleted",
+        description: (
+          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+            <code className="text-white">
+              <p>Item deleted succesfully!</p>
+            </code>
+          </pre>
+        ),
+      });
+      openCart();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Check if the error is an Axios error
+        const serverError = error.response;
+
+        if (serverError) {
+          // Access detailed error information
+          console.error(
+            "Error deleting item:",
+            serverError.status,
+            serverError.data
+          );
+          popupToast(
+            `Error deleting item: Status ${serverError.status}`,
+            `${serverError.data.message}`
+          );
+        } else {
+          // Error does not have a response (network error, timeout, etc)
+          console.error("Error deleting item:", error.message);
+          popupToast("Error deleting item", `${error.message}`);
+        }
+      } else {
+        // Error is not from Axios
+        console.error("Non-Axios error:", error);
+        popupToast("Error deleting item", `${error}`);
+      }
+    }
+  };
+  console.log(cartItems);
+
   const CheckoutCart = () => {
     return (
       <Table>
@@ -171,7 +233,12 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
                 <TableCell>{room ? room.name : "Room not found"}</TableCell>
                 <TableCell>{cartItem.quantity}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant={"ghost"}>
+                  <Button
+                    variant={"ghost"}
+                    onClick={() => {
+                      deleteItem({ cartLineItemId: cartItem.id });
+                    }}
+                  >
                     <TrashIcon />
                   </Button>
                 </TableCell>
@@ -198,7 +265,7 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
           </SheetTrigger>
           <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px]">
             <SheetHeader>
-              <SheetTitle>Transactions</SheetTitle>
+              <SheetTitle className="text-primary">Transactions</SheetTitle>
             </SheetHeader>
             <div className="py-8">
               <CheckoutCart />

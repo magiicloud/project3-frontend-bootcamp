@@ -35,6 +35,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { useAllItems, useRooms } from "../hooks/useFetchFormData";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 
 const formSchema = z.object({
   type: z.enum(["deleteroomitem", "deleteall", "move"], {
@@ -62,7 +63,7 @@ export const DeleteItem = () => {
       roomSelect: 0,
     },
   });
-
+  const sendRequest = useAuthenticatedRequest();
   const { rooms, error: roomsError, isLoading: roomsLoading } = useRooms();
   const {
     allItems,
@@ -75,7 +76,11 @@ export const DeleteItem = () => {
 
     if (form.getValues("type") === "deleteroomitem") {
       try {
-        const response = await axios.delete(`${BACKEND_URL}/deleteroomitem`, {
+        // const response = await axios.delete(`${BACKEND_URL}/deleteroomitem`, {
+        //   data: formData,
+        // });
+        const response = await sendRequest(`/deleteroomitem/`, {
+          method: "DELETE",
           data: formData,
         });
         console.log(response.data);
@@ -97,7 +102,11 @@ export const DeleteItem = () => {
 
     if (form.getValues("type") === "deleteall") {
       try {
-        const response = await axios.delete(`${BACKEND_URL}/deleteitem`, {
+        // const response = await axios.delete(`${BACKEND_URL}/deleteitem`, {
+        //   data: formData,
+        // });
+        const response = await sendRequest(`/deleteitem/`, {
+          method: "DELETE",
           data: formData,
         });
         console.log(response.data);
@@ -120,8 +129,12 @@ export const DeleteItem = () => {
 
   const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
     try {
-      const response = await axios.get(
-        `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
+      // const response = await axios.get(
+      //   `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
+      // );
+      const response = await sendRequest(
+        `/findserial/${serialNum}/${selectRoom}`,
+        { method: "GET" }
       );
       console.log(response.data);
       form.setValue("itemName", response.data.item_name);
@@ -153,7 +166,9 @@ export const DeleteItem = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="pb-8 px-12 grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-7"
         >
-          <h3 className="text-left sm:col-start-1 sm:col-span-3">Step 1</h3>
+          <h3 className="text-primary text-left font-bold text-xl mt-5 sm:col-start-1 sm:col-span-3">
+            Step 1
+          </h3>
 
           {/* Transaction Type Selection */}
           <div className="mb-3 sm:col-start-1 sm:col-span-4">
@@ -285,7 +300,9 @@ export const DeleteItem = () => {
             <Separator />
           </div>
 
-          <h3 className="text-left sm:col-start-1 sm:col-span-4">Step 2</h3>
+          <h3 className="text-primary text-left font-bold text-xl sm:col-start-1 sm:col-span-4">
+            Step 2
+          </h3>
 
           <div className="sm:col-start-1 sm:col-span-3">
             <FormField
@@ -379,7 +396,7 @@ export const DeleteItem = () => {
           </div>
           <div className="mt-6 sm:col-start-1 sm:col-span-1">
             <Button type="submit" size={"lg"}>
-              Add to cart
+              Delete
             </Button>
           </div>
         </form>

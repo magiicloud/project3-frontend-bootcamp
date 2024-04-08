@@ -43,6 +43,7 @@ import { ManageItems } from "./pages/ManageItems";
 import { AddNewItem } from "./pages/AddNewItem";
 import { AllItems } from "./pages/allitems/page";
 import { ProtectedRoute } from "./components/ProtectedRoutes";
+import { Dashboard } from "./pages/Dashboard";
 
 const App = () => {
   return (
@@ -59,12 +60,13 @@ const App = () => {
           }
         >
           {/* Nested routes will render within <MenuFrame />, protected by ProtectedRoute */}
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="buildings" element={<Buildings />} />
           <Route path="allitems" element={<AllItems />} />
           <Route path="manageitems" element={<ManageItems />} />
           <Route path="addnewitem" element={<AddNewItem />} />
           {/* Redirect to "/landing/allitems" or a default nested route if "/landing" is accessed directly */}
-          <Route index element={<Navigate replace to="allitems" />} />
+          <Route index element={<Navigate replace to="dashboard" />} />
         </Route>
       </Routes>
     </BrowserRouter>

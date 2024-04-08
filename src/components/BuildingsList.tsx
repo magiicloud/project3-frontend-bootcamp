@@ -24,6 +24,14 @@ interface room {
   createdAt: string;
   updatedAt: string;
 }
+interface user {
+  id: number;
+  building_id: number;
+  user_id: number;
+  admin: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface building {
   id: number;
@@ -33,6 +41,7 @@ interface building {
   createdAt: string;
   updatedAt: string;
   rooms: room[];
+  users: user[];
 }
 
 interface BuildingListProps {
@@ -114,7 +123,9 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
               maxHeight: "100%",
             }}
           >
-            <DialogHeader>Welcome to: {building.name}</DialogHeader>
+            <DialogHeader>
+              Welcome to: {building.name} {building.users[0].admin && "(Admin)"}
+            </DialogHeader>
             <DialogDescription>
               Click on any room to go there and look at the stock there.
             </DialogDescription>

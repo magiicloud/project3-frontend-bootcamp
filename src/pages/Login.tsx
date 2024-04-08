@@ -3,16 +3,26 @@ import { cn } from "../lib/utils";
 import { buttonVariants } from "../components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export const Login = () => {
   const LoginButton = () => {
-    const { loginWithRedirect, isAuthenticated, getAccessTokenSilently } =
+    const { loginWithRedirect, isAuthenticated, getAccessTokenSilently, user } =
       useAuth0();
     const navigate = useNavigate();
 
     const checkUser = async () => {
       if (isAuthenticated) {
         await getAccessTokenSilently();
+        if (user) {
+          await axios
+            .post(process.env.REACT_APP_BACKEND_URL + "/users", {
+              email: user.email,
+            })
+            .then((response) => {
+              console.log(response.data);
+            });
+        }
         navigate("/landing/dashboard");
       }
     };

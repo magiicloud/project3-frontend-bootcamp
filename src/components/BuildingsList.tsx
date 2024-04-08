@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "../lib/utils";
 import { SetStateAction } from "react";
 import {
@@ -45,9 +46,11 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
   const [buildings, setBuildings] = useState<buildingList>([]);
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
 
+  const { user } = useAuth0();
+
   const fetchBuildings = async () => {
     const fetchedBuildings = await axios.get(
-      process.env.REACT_APP_BACKEND_URL + "/buildings"
+      process.env.REACT_APP_BACKEND_URL + "/buildings/" + user?.email
     );
     const fetchedBuildingsData = await fetchedBuildings.data;
     setBuildings(fetchedBuildingsData as buildingList);

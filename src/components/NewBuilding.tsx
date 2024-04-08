@@ -296,7 +296,7 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
               style={{ backgroundColor: "grey", borderColor: "black" }}
             >
               <div
-                className="relative bg-cover bg-no-repeatrelative bg-cover bg-no-repeat"
+                className="relative bg-cover bg-no-repeatrelative bg-no-repeat"
                 style={{
                   height: building.height,
                   width: building.width,

@@ -8,8 +8,6 @@ import {
   Menu,
   Package,
   ShoppingCart,
-  Users,
-  Building2,
 } from "lucide-react";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { Button } from "../components/ui/button";

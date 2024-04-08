@@ -126,9 +126,7 @@ export const Dashboard = () => {
               </CardTitle>
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <BuildingsList />
-            </CardContent>
+            <CardContent>{/* <BuildingsList /> */}</CardContent>
           </Card>
         </div>
         {/* <div className="grid gap-4 md:gap-8 lg:grid-cols-2 2xl:grid-cols-3">

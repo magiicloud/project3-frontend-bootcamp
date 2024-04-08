@@ -4,6 +4,7 @@ import { buttonVariants } from "../components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "../components/ui/use-toast";
 
 export const Login = () => {
   const LoginButton = () => {
@@ -12,18 +13,32 @@ export const Login = () => {
     const navigate = useNavigate();
 
     const checkUser = async () => {
-      if (isAuthenticated) {
-        await getAccessTokenSilently();
-        if (user) {
-          await axios
-            .post(process.env.REACT_APP_BACKEND_URL + "/users", {
-              email: user.email,
-            })
-            .then((response) => {
-              console.log(response.data);
-            });
+      try {
+        if (isAuthenticated) {
+          await getAccessTokenSilently();
+          if (user) {
+            const response = await axios.post(
+              process.env.REACT_APP_BACKEND_URL + "/users",
+              {
+                email: user.email,
+              }
+            );
+            console.log(response.data);
+          }
+          navigate("/landing/dashboard");
         }
-        navigate("/landing/dashboard");
+      } catch (error) {
+        console.error("Error during login process:", error);
+        toast({
+          title: "Error during login process:",
+          description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+              <code className="text-white">
+                {JSON.stringify(error, null, 2)}
+              </code>
+            </pre>
+          ),
+        });
       }
     };
 

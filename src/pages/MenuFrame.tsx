@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
+import { useUser } from "../components/UserContext";
 
 const Menubar = () => {
   return (
@@ -105,6 +106,12 @@ export const MenuFrame = () => {
   const { logout, user } = useAuth0();
   const location = useLocation();
   const pageTitle = getPageTitle(location.pathname);
+  const { logoutUserContext } = useUser();
+
+  const handleLogout = () => {
+    logoutUserContext();
+    logout({ logoutParams: { returnTo: window.location.origin } }); // Logout from Auth0
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -145,13 +152,7 @@ export const MenuFrame = () => {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                logout({ logoutParams: { returnTo: window.location.origin } })
-              }
-            >
-              Logout
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </header>

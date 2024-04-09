@@ -5,13 +5,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "../components/ui/use-toast";
+import { useUser } from "../components/UserContext";
 
 export const Login = () => {
   const LoginButton = () => {
     const { loginWithRedirect, isAuthenticated, getAccessTokenSilently, user } =
       useAuth0();
     const navigate = useNavigate();
-
+    const { loginUserContext } = useUser();
     const checkUser = async () => {
       try {
         if (isAuthenticated) {
@@ -27,7 +28,7 @@ export const Login = () => {
                 photoUrl: user.picture,
               }
             );
-            console.log(response.data);
+            loginUserContext(response.data[0].id);
           }
           navigate("/landing/dashboard");
         }
@@ -61,7 +62,6 @@ export const Login = () => {
       </div>
     );
   };
-
   return (
     <>
       <div className="container relative hidden h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">

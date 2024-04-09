@@ -24,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
+import { useUser } from "./UserContext";
 
 interface CartItem {
   id: number;
@@ -74,14 +75,13 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [rooms, setRooms] = useState<Rooms[]>([]);
   const sendRequest = useAuthenticatedRequest();
+  const { userId } = useUser();
 
   const openCart = async () => {
     try {
-      // const activecart = await axios.get(`${BACKEND_URL}/getactivecart`);
-      const activecart = await sendRequest(`/getactivecart/`, {
+      const activecart = await sendRequest(`/getactivecart/${userId}`, {
         method: "GET",
       });
-      // const roomlist = await axios.get(`${BACKEND_URL}/allrooms`);
       const roomlist = await sendRequest(`/allrooms/`, {
         method: "GET",
       });
@@ -120,9 +120,9 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
 
   const checkout = async () => {
     try {
-      // const submit = await axios.put(`${BACKEND_URL}/checkoutcyclecount`);
       const submit = await sendRequest(`/checkoutcyclecount/`, {
         method: "PUT",
+        data: { userId: userId },
       });
       toast({
         title: "Checkout success",

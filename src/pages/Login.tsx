@@ -16,11 +16,15 @@ export const Login = () => {
       try {
         if (isAuthenticated) {
           await getAccessTokenSilently();
+          console.log(user);
           if (user) {
             const response = await axios.post(
               process.env.REACT_APP_BACKEND_URL + "/users",
               {
                 email: user.email,
+                name: user.name,
+                id: user.sub,
+                photoUrl: user.picture,
               }
             );
             console.log(response.data);
@@ -34,7 +38,7 @@ export const Login = () => {
           description: (
             <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
               <code className="text-white">
-                {JSON.stringify(error, null, 2)}
+                {JSON.stringify((error as Error).message, null, 2)}
               </code>
             </pre>
           ),

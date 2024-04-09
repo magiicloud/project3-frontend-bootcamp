@@ -31,7 +31,8 @@ import {
   TableRow,
 } from "../../components/ui/table";
 import { Separator } from "../../components/ui/separator";
-import { Search } from "lucide-react";
+import { DownloadIcon, Search } from "lucide-react";
+import { generateAllItemsTableExcel } from "../../components/utils/generateExcel";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -178,10 +179,24 @@ export function DataTable<TData, TValue>({
       </div>
 
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex flex-1 text-xs text-muted-foreground px-2">
+        <div className="flex flex-1 items-center text-xs text-muted-foreground px-2">
+          <Button
+            size="sm"
+            variant={"ghost"}
+            className="text-muted-foreground px-2"
+            onClick={() => {
+              const allItemsData = table
+                .getFilteredSelectedRowModel()
+                .rows.map((row) => row.original);
+              generateAllItemsTableExcel(allItemsData);
+            }}
+          >
+            <DownloadIcon className="h-5 w-5" />
+          </Button>
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
+
         <Button
           variant="outline"
           size="sm"

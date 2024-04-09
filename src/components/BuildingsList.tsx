@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "../lib/utils";
 import { SetStateAction } from "react";
 import {
@@ -23,6 +24,14 @@ interface room {
   createdAt: string;
   updatedAt: string;
 }
+interface user {
+  id: number;
+  building_id: number;
+  user_id: number;
+  admin: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface building {
   id: number;
@@ -32,6 +41,7 @@ interface building {
   createdAt: string;
   updatedAt: string;
   rooms: room[];
+  users: user[];
 }
 
 interface BuildingListProps {
@@ -45,9 +55,11 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
   const [buildings, setBuildings] = useState<buildingList>([]);
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
 
+  const { user } = useAuth0();
+
   const fetchBuildings = async () => {
     const fetchedBuildings = await axios.get(
-      process.env.REACT_APP_BACKEND_URL + "/buildings"
+      process.env.REACT_APP_BACKEND_URL + "/buildings/" + user?.email
     );
     const fetchedBuildingsData = await fetchedBuildings.data;
     setBuildings(fetchedBuildingsData as buildingList);
@@ -111,7 +123,9 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
               maxHeight: "100%",
             }}
           >
-            <DialogHeader>Welcome to: {building.name}</DialogHeader>
+            <DialogHeader>
+              Welcome to: {building.name} {building.users[0].admin && "(Admin)"}
+            </DialogHeader>
             <DialogDescription>
               Click on any room to go there and look at the stock there.
             </DialogDescription>

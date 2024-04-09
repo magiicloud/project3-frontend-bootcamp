@@ -202,7 +202,7 @@ export const Dashboard = () => {
               </Button>
             </CardHeader>
             {expItems.map((item, index) => (
-              <CardContent className="grid gap-8 mb-6">
+              <CardContent key={item.id} className="grid gap-8 mb-6">
                 <div className="flex items-center gap-4">
                   <Avatar className="hidden h-9 w-9 sm:flex">
                     <AvatarImage src="/avatars/03.png" alt="Avatar" />

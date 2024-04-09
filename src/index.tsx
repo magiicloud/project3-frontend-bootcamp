@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { Toaster } from "./components/ui/toaster";
+import { UserProvider } from "./components/UserContext";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -21,7 +22,9 @@ root.render(
     useRefreshTokens={true}
     cacheLocation="localstorage"
   >
-    <App />
-    <Toaster />
+    <UserProvider>
+      <App />
+      <Toaster />
+    </UserProvider>
   </Auth0Provider>
 );

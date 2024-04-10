@@ -65,7 +65,6 @@ export const Dashboard = () => {
       const response = await sendRequest(`/getbelowpar/`, {
         method: "GET",
       });
-      console.log(response.data.count[0].count);
       setParCount(response.data.count[0].count);
       setParItems(response.data.items);
     } catch (error) {
@@ -155,7 +154,7 @@ export const Dashboard = () => {
             </CardHeader>
             {parItems &&
               parItems.map((item, index) => (
-                <CardContent className="grid gap-8 mb-6">
+                <CardContent key={index} className="grid gap-8 mb-6">
                   <div className="flex items-center gap-4">
                     <Avatar className="hidden h-9 w-9 sm:flex">
                       <AvatarImage src="/avatars/03.png" alt="Avatar" />

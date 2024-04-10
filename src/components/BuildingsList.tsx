@@ -11,7 +11,7 @@ import {
   DialogDescription,
 } from "./ui/dialog";
 import { RoomObject } from "../pages/Buildings";
-import { buildingList } from "../pages/Buildings";
+import { buildingList } from "../hooks/useBuildings";
 import axios from "axios";
 
 interface BuildingListProps {

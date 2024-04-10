@@ -6,6 +6,7 @@ import { BuildingsList } from "../components/BuildingsList";
 import { Room } from "./Room";
 import axios from "axios";
 import { useUser } from "../components/UserContext";
+import { buildingList, useBuildings } from "../hooks/useBuildings";
 
 export interface RoomObject {
   id?: number;
@@ -13,52 +14,11 @@ export interface RoomObject {
   building?: string;
 }
 
-interface room {
-  id: number;
-  name: string;
-  left: number;
-  top: number;
-  height: number;
-  width: number;
-  building_id: number;
-  createdAt: string;
-  updatedAt: string;
-}
-interface user {
-  id: number;
-  building_id: number;
-  user_id: number;
-  admin: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface building {
-  id: number;
-  name: string;
-  image_size: string;
-  building_img_url: string;
-  createdAt: string;
-  updatedAt: string;
-  rooms: room[];
-  users: user[];
-}
-
-export type buildingList = building[];
-
 export const Buildings = () => {
   const [room, setRoom] = useState<RoomObject>({});
   const [buildings, setBuildings] = useState<buildingList>([]);
 
-  const { userId } = useUser();
-
-  const fetchBuildings = async () => {
-    const fetchedBuildings = await axios.get(
-      process.env.REACT_APP_BACKEND_URL + "/buildings/" + userId
-    );
-    const fetchedBuildingsData = await fetchedBuildings.data;
-    return fetchedBuildingsData as buildingList;
-  };
+  const { fetchBuildings } = useBuildings();
 
   const getNewBuildings = async () => {
     try {

@@ -1,5 +1,4 @@
 import React, { useState, MouseEventHandler, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useUser } from "./UserContext";
 import { cn } from "../lib/utils";
 import RectangleSelection from "./rectangle-select";
@@ -17,7 +16,6 @@ import { Button } from "./ui/button";
 import { storage } from "../firebase";
 import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
-import { Proportions } from "lucide-react";
 
 const successMessage: string =
   "The new building has been recorded, close this dialog and head to the main page to view the new building!";

@@ -1,4 +1,9 @@
-import React, { useState, MouseEventHandler, useEffect } from "react";
+import React, {
+  useState,
+  MouseEventHandler,
+  useEffect,
+  HTMLAttributes,
+} from "react";
 import { useUser } from "./UserContext";
 import { cn } from "../lib/utils";
 import RectangleSelection from "./rectangle-select";
@@ -12,7 +17,6 @@ import {
   DialogDescription,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-
 import { storage } from "../firebase";
 import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
@@ -21,7 +25,7 @@ const successMessage: string =
   "The new building has been recorded, close this dialog and head to the main page to view the new building!";
 const errorMessage: string = "Close this dialog and try again.";
 
-interface NewBuildingProps {
+interface NewBuildingProps extends HTMLAttributes<HTMLDivElement> {
   getNewBuildings: () => Promise<void>;
 }
 
@@ -255,7 +259,9 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
   return (
     <>
       <Dialog open={mainDialog} onOpenChange={setMainDialog} defaultOpen>
-        <DialogTrigger>Add new building</DialogTrigger>
+        <DialogTrigger>
+          <Button>Add new building</Button>
+        </DialogTrigger>
         <DialogContent
           style={{
             overflowY: "auto",

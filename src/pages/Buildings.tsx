@@ -39,8 +39,12 @@ export const Buildings = () => {
           <Room room={room} setRoom={setRoom} />
         ) : (
           <>
-            <h2 className="px-3 mt-5">Buildings</h2>
-            <NewBuilding getNewBuildings={getNewBuildings} />
+            <div className="flex flex-row">
+              <h2 className="px-3 mt-5">Buildings</h2>
+              <div className="ml-auto flex flex-row">
+                <NewBuilding getNewBuildings={getNewBuildings} />
+              </div>
+            </div>
             <BuildingsList buildings={buildings} setRoom={setRoom} />
           </>
         )}

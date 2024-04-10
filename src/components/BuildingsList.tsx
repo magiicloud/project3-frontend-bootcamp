@@ -10,9 +10,18 @@ import {
   DialogTitle,
   DialogDescription,
 } from "./ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { RoomObject } from "../pages/Buildings";
 import { buildingList } from "../hooks/useBuildings";
 import { HTMLAttributes } from "react";
+import { Button } from "./ui/button";
+import { AddBuildingUser } from "./AddBuildingUser";
 
 interface BuildingListProps extends HTMLAttributes<HTMLDivElement> {
   setRoom: React.Dispatch<React.SetStateAction<RoomObject>>;
@@ -22,6 +31,7 @@ interface BuildingListProps extends HTMLAttributes<HTMLDivElement> {
 
 export const BuildingsList: React.FC<BuildingListProps> = (props) => {
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
+  const [newUserEmail, setNewUserEmail] = useState("");
 
   useEffect(() => {
     const buildingLineItems: unknown = props.buildings.map(
@@ -55,20 +65,18 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
         return (
           <Dialog key={index}>
             <DialogTrigger className="w-full">
-              <div className="border-t border-b border-gray-500 w-full flex flex-row">
-                <div className="h-[150px] w-[250px] m-1 flex justify-center items-center">
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle className="mt-2 mb-0">{building.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
                   <img
                     className="m-0 max-w-full max-h-full"
                     src={building.building_img_url}
                     alt="building preview"
                   />
-                </div>
-                <div className="flex items-center m-auto p-5">
-                  <h1 key={index} className="prose m-0">
-                    Building Name: {building.name}
-                  </h1>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </DialogTrigger>
             <DialogContent
               style={{
@@ -78,8 +86,7 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
               }}
             >
               <DialogHeader>
-                Welcome to: {building.name}{" "}
-                {building.users[0].admin && "(Admin)"}
+                <DialogTitle>Welcome to: {building.name}</DialogTitle>
               </DialogHeader>
               <DialogDescription>
                 Click on any room to go there and look at the stock there.
@@ -93,6 +100,10 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
 
                 {roomDivs}
               </div>
+              <AddBuildingUser
+                buildingId={building.id}
+                admin={building.users[0].admin}
+              />
             </DialogContent>
           </Dialog>
         );
@@ -100,5 +111,12 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
     );
     setBuildingLineItem(buildingLineItems as SetStateAction<React.JSX.Element>);
   }, [props]);
-  return <div>{buildingLineItem}</div>;
+
+  return (
+    <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-8 lg:grid-cols-4">
+        {buildingLineItem}
+      </div>
+    </div>
+  );
 };

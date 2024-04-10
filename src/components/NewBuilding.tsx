@@ -23,8 +23,7 @@ const successMessage: string =
 const errorMessage: string = "Close this dialog and try again.";
 
 interface NewBuildingProps {
-  refresh: boolean;
-  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+  getNewBuildings: () => Promise<void>;
 }
 
 interface newRoom {
@@ -131,7 +130,7 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
   const handleSuccess = () => {
     setMainDialog(false);
     setCompleteDialog(false);
-    props.setRefresh(!props.refresh);
+    props.getNewBuildings();
   };
 
   const parentWidth = (elem: HTMLElement | null) => {

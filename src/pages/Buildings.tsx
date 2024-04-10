@@ -34,7 +34,7 @@ export const Buildings = () => {
   }, []);
   return (
     <>
-      <div className="prose max-w-none">
+      <div className="prose w-full max-w-none md:min-w-[700px] lg:min-w-[900px] xl:min-w-[1200px]">
         {Object.keys(room).length > 0 ? (
           <Room room={room} setRoom={setRoom} />
         ) : (

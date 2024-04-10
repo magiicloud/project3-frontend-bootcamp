@@ -17,6 +17,7 @@ import {
 } from "../components/ui/card";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
 import { BuildingsList } from "../components/BuildingsList";
+import { buildingList, useBuildings } from "../hooks/useBuildings";
 import {
   generateExpItemExcel,
   generateParItemExcel,
@@ -49,6 +50,9 @@ export const Dashboard = () => {
   const [expItems, setExpItems] = useState<ExpItem[]>([]);
   const [parCount, setParCount] = useState(0);
   const [parItems, setParItems] = useState<ParItem[]>([]);
+  const [buildings, setBuildings] = useState<buildingList>([]);
+
+  const { fetchBuildings } = useBuildings();
 
   const getShortExp = async () => {
     try {
@@ -72,9 +76,19 @@ export const Dashboard = () => {
     }
   };
 
+  const getBuildings = async () => {
+    try {
+      const newBuildings = await fetchBuildings();
+      setBuildings(newBuildings);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getShortExp();
     getBelowPar();
+    getBuildings();
   }, []);
 
   function calculateDaysTillExpiry(expiryDate: string) {
@@ -84,6 +98,31 @@ export const Dashboard = () => {
     const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return daysDiff >= 0 ? daysDiff : 0; // Ensures negative days are not shown
   }
+
+  const buildingContent = () => {
+    if (buildings.length > 0) {
+      return (
+        <div className="w-full flex flex-row">
+          <div className="h-[150px] w-[250px] m-1 flex justify-center items-center">
+            <img
+              className="m-0 max-w-full max-h-full"
+              src={buildings[0].building_img_url}
+              alt="building preview"
+            />
+          </div>
+          <div className="flex items-center m-5">
+            <h1 className="prose m-0">Building Name: {buildings[0].name}</h1>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="h-full w-full m-1 flex justify-center items-center">
+          <h1>You do not have any active buildings</h1>
+        </div>
+      );
+    }
+  };
 
   return (
     <>
@@ -125,7 +164,7 @@ export const Dashboard = () => {
               </CardTitle>
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>{/* <BuildingsList /> */}</CardContent>
+            <CardContent>{buildingContent()}</CardContent>
           </Card>
         </div>
         {/* <div className="grid gap-4 md:gap-8 lg:grid-cols-2 2xl:grid-cols-3">

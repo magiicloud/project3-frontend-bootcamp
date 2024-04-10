@@ -12,9 +12,9 @@ import {
 } from "./ui/dialog";
 import { RoomObject } from "../pages/Buildings";
 import { buildingList } from "../hooks/useBuildings";
-import axios from "axios";
+import { HTMLAttributes } from "react";
 
-interface BuildingListProps {
+interface BuildingListProps extends HTMLAttributes<HTMLDivElement> {
   setRoom: React.Dispatch<React.SetStateAction<RoomObject>>;
   refresh?: boolean;
   buildings: buildingList;
@@ -63,7 +63,7 @@ export const BuildingsList: React.FC<BuildingListProps> = (props) => {
                     alt="building preview"
                   />
                 </div>
-                <div className="flex items-center m-5">
+                <div className="flex items-center m-auto p-5">
                   <h1 key={index} className="prose m-0">
                     Building Name: {building.name}
                   </h1>

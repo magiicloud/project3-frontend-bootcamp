@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
-  Building2,
+  Building,
   CircleUser,
   Home,
   LineChart,
@@ -67,7 +67,7 @@ const Menubar = () => {
           }`
         }
       >
-        <Building2 className="h-5 w-5" />
+        <Building className="h-5 w-5" />
         Buildings
       </NavLink>
       <NavLink

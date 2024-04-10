@@ -5,7 +5,7 @@ import { NewBuilding } from "../components/NewBuilding";
 import { BuildingsList } from "../components/BuildingsList";
 import { Room } from "./Room";
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "../components/UserContext";
 
 export interface RoomObject {
   id?: number;
@@ -50,11 +50,11 @@ export const Buildings = () => {
   const [room, setRoom] = useState<RoomObject>({});
   const [buildings, setBuildings] = useState<buildingList>([]);
 
-  const { user } = useAuth0();
+  const { userId } = useUser();
 
   const fetchBuildings = async () => {
     const fetchedBuildings = await axios.get(
-      process.env.REACT_APP_BACKEND_URL + "/buildings/" + user?.email
+      process.env.REACT_APP_BACKEND_URL + "/buildings/" + userId
     );
     const fetchedBuildingsData = await fetchedBuildings.data;
     return fetchedBuildingsData as buildingList;
@@ -64,7 +64,6 @@ export const Buildings = () => {
     try {
       const newBuildings = await fetchBuildings();
       setBuildings(newBuildings);
-      console.log(newBuildings);
     } catch (error) {
       console.log(error);
     }

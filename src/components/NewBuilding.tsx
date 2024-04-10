@@ -1,5 +1,6 @@
 import React, { useState, MouseEventHandler, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "./UserContext";
 import { cn } from "../lib/utils";
 import RectangleSelection from "./rectangle-select";
 import { ChangeEvent } from "react";
@@ -67,7 +68,7 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
   const [newRoomError, setNewRoomError] = useState<string>("");
   const [newBuildingError, setNewBuildingError] = useState<string>("");
 
-  const { user } = useAuth0();
+  const { userId } = useUser();
 
   useEffect(() => {
     setNewBox({
@@ -218,14 +219,13 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
         building_img_url: imageUrl,
       },
       rooms: [] as rooms,
-      userEmail: "",
+      userId: userId,
     };
     rooms.map((room) => {
       const newRoom = { ...room };
       newRoom["building_id"] = 0;
       data.rooms.push(newRoom);
     });
-    if (user) data.userEmail = user.email as string;
     axios
       .post(process.env.REACT_APP_BACKEND_URL + "/buildings", data)
       .then((response) => {

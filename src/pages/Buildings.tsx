@@ -4,6 +4,9 @@ import { buttonVariants } from "../components/ui/button";
 import { NewBuilding } from "../components/NewBuilding";
 import { BuildingsList } from "../components/BuildingsList";
 import { Room } from "./Room";
+import axios from "axios";
+import { useUser } from "../components/UserContext";
+import { buildingList, useBuildings } from "../hooks/useBuildings";
 
 export interface RoomObject {
   id?: number;
@@ -13,17 +16,36 @@ export interface RoomObject {
 
 export const Buildings = () => {
   const [room, setRoom] = useState<RoomObject>({});
-  const [refresh, setRefresh] = useState<boolean>(false);
+  const [buildings, setBuildings] = useState<buildingList>([]);
+
+  const { fetchBuildings } = useBuildings();
+
+  const getNewBuildings = async () => {
+    try {
+      const newBuildings = await fetchBuildings();
+      setBuildings(newBuildings);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getNewBuildings();
+  }, []);
   return (
     <>
-      <div className="prose max-w-none">
+      <div className="prose w-full max-w-none md:min-w-[700px] lg:min-w-[900px] xl:min-w-[1200px]">
         {Object.keys(room).length > 0 ? (
           <Room room={room} setRoom={setRoom} />
         ) : (
           <>
-            <h2 className="px-3 mt-5">Buildings</h2>
-            <NewBuilding refresh={refresh} setRefresh={setRefresh} />
-            <BuildingsList setRoom={setRoom} refresh={refresh} />
+            <div className="flex flex-row">
+              <h2 className="px-3 mt-5">Buildings</h2>
+              <div className="ml-auto flex flex-row">
+                <NewBuilding getNewBuildings={getNewBuildings} />
+              </div>
+            </div>
+            <BuildingsList buildings={buildings} setRoom={setRoom} />
           </>
         )}
       </div>

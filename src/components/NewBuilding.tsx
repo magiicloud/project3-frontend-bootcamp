@@ -1,5 +1,10 @@
-import React, { useState, MouseEventHandler, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React, {
+  useState,
+  MouseEventHandler,
+  useEffect,
+  HTMLAttributes,
+} from "react";
+import { useUser } from "./UserContext";
 import { cn } from "../lib/utils";
 import RectangleSelection from "./rectangle-select";
 import { ChangeEvent } from "react";
@@ -12,19 +17,16 @@ import {
   DialogDescription,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-
 import { storage } from "../firebase";
 import { ref as sRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import axios from "axios";
-import { Proportions } from "lucide-react";
 
 const successMessage: string =
   "The new building has been recorded, close this dialog and head to the main page to view the new building!";
 const errorMessage: string = "Close this dialog and try again.";
 
-interface NewBuildingProps {
-  refresh: boolean;
-  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+interface NewBuildingProps extends HTMLAttributes<HTMLDivElement> {
+  getNewBuildings: () => Promise<void>;
 }
 
 interface newRoom {
@@ -68,7 +70,7 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
   const [newRoomError, setNewRoomError] = useState<string>("");
   const [newBuildingError, setNewBuildingError] = useState<string>("");
 
-  const { user } = useAuth0();
+  const { userId } = useUser();
 
   useEffect(() => {
     setNewBox({
@@ -131,7 +133,7 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
   const handleSuccess = () => {
     setMainDialog(false);
     setCompleteDialog(false);
-    props.setRefresh(!props.refresh);
+    props.getNewBuildings();
   };
 
   const parentWidth = (elem: HTMLElement | null) => {
@@ -219,14 +221,13 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
         building_img_url: imageUrl,
       },
       rooms: [] as rooms,
-      userEmail: "",
+      userId: userId,
     };
     rooms.map((room) => {
       const newRoom = { ...room };
       newRoom["building_id"] = 0;
       data.rooms.push(newRoom);
     });
-    if (user) data.userEmail = user.email as string;
     axios
       .post(process.env.REACT_APP_BACKEND_URL + "/buildings", data)
       .then((response) => {
@@ -258,7 +259,9 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
   return (
     <>
       <Dialog open={mainDialog} onOpenChange={setMainDialog} defaultOpen>
-        <DialogTrigger>Add new building</DialogTrigger>
+        <DialogTrigger>
+          <Button>Add new building</Button>
+        </DialogTrigger>
         <DialogContent
           style={{
             overflowY: "auto",

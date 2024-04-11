@@ -17,7 +17,6 @@ export const Login = () => {
       try {
         if (isAuthenticated) {
           await getAccessTokenSilently();
-          console.log(user);
           if (user) {
             const response = await axios.post(
               process.env.REACT_APP_BACKEND_URL + "/users",

@@ -41,6 +41,7 @@ export const Room: React.FC<RoomProps> = (props) => {
   const [roomItems, setRoomItems] = useState<ItemList>([]);
 
   const fetchRoomItems = async () => {
+    console.log(props.room.id);
     const fetchedRoomItems = await axios.get(
       process.env.REACT_APP_BACKEND_URL + "/items/" + props.room.id
     );

@@ -263,7 +263,7 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
               <ShoppingCart />
             </Button>
           </SheetTrigger>
-          <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px]">
+          <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px] overflow-scroll">
             <SheetHeader>
               <SheetTitle className="text-primary">Transactions</SheetTitle>
             </SheetHeader>

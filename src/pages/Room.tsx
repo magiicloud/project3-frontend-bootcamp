@@ -88,7 +88,7 @@ export const Room: React.FC<RoomProps> = (props) => {
                 Add Item
               </Button>
             </SheetTrigger>
-            <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px] xl:w-[1080px]">
+            <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px] xl:w-[1080px] overflow-scroll">
               <SheetHeader>
                 <SheetTitle className="text-primary ml-11">
                   Add New Item
@@ -97,11 +97,7 @@ export const Room: React.FC<RoomProps> = (props) => {
               <div className="py-8">
                 <AddNewItem />
               </div>
-              <SheetFooter>
-                <SheetClose asChild>
-                  <Button type="submit">Checkout</Button>
-                </SheetClose>
-              </SheetFooter>
+              <SheetFooter></SheetFooter>
             </SheetContent>
           </Sheet>
         </div>

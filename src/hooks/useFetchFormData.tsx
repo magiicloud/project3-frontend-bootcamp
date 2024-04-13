@@ -12,6 +12,7 @@ export const useRooms = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const { userId } = useUser();
   const sendRequest = useAuthenticatedRequest();
 
   useEffect(() => {
@@ -19,7 +20,9 @@ export const useRooms = () => {
 
     const fetchRooms = async () => {
       try {
-        const roomsData = await sendRequest("/allrooms/", { method: "GET" });
+        const roomsData = await sendRequest(`/allrooms/${userId}`, {
+          method: "GET",
+        });
         setRooms(roomsData.data);
         setIsLoading(false);
       } catch (err) {
@@ -67,7 +70,6 @@ export const useAllItems = () => {
           method: "GET",
         });
         setAllItems(allItemsData.data);
-        console.log(allItemsData.data);
         setIsLoading(false);
       } catch (err) {
         console.error(err);

@@ -16,7 +16,6 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
-import { BuildingsList } from "../components/BuildingsList";
 import { buildingList, useBuildings } from "../hooks/useBuildings";
 import {
   generateExpItemExcel,
@@ -253,12 +252,14 @@ export const Dashboard = () => {
                     <p className="text-sm text-muted-foreground m-0">
                       {item.item.serial_num}
                     </p>
-                    {/* <p className="text-sm font-medium m-0">
-                      Exp: {new Date(item.expiry_date).toLocaleDateString()}
-                    </p> */}
-                    <Badge variant={"outline"} className="w-fit">
-                      Exp: {new Date(item.expiry_date).toLocaleDateString()}
-                    </Badge>
+                    <div className="flex flex-1 gap-1">
+                      <Badge variant={"outline"} className="w-fit">
+                        Exp: {new Date(item.expiry_date).toLocaleDateString()}
+                      </Badge>
+                      <Badge variant={"secondary"} className="w-fit">
+                        {item.room.name}
+                      </Badge>
+                    </div>
                   </div>
                   <div className="grid grid-cols-1 text-center h-full items-center">
                     <Badge variant={"secondary"} className="w-full py-3 px-4">

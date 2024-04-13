@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../components/UserContext";
 import axios from "axios";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 
 interface room {
   id: number;
@@ -36,12 +37,14 @@ interface building {
 export type buildingList = building[];
 
 export const useBuildings = () => {
+  const sendRequest = useAuthenticatedRequest();
   const { userId } = useUser();
 
   const fetchBuildings = async () => {
-    const fetchedBuildings = await axios.get(
-      process.env.REACT_APP_BACKEND_URL + "/buildings/" + userId
-    );
+    // ${userId}
+    const fetchedBuildings = await sendRequest(`/buildings/1`, {
+      method: "GET",
+    });
     const fetchedBuildingsData = await fetchedBuildings.data;
     return fetchedBuildingsData as buildingList;
   };

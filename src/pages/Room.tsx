@@ -7,6 +7,16 @@ import { buttonVariants } from "../components/ui/button";
 import { RoomObject } from "./Buildings";
 import { ItemCard } from "../components/ItemCard";
 import axios from "axios";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "../components/ui/sheet";
+import { AddNewItem } from "./AddNewItem";
 
 interface RoomProps {
   room: RoomObject;
@@ -53,7 +63,7 @@ export const Room: React.FC<RoomProps> = (props) => {
 
   useEffect(() => {
     fetchRoomItems();
-  }, []);
+  }, [roomItems]);
 
   const roomCards = roomItems.map((item) => <ItemCard item={item}></ItemCard>);
 
@@ -68,9 +78,33 @@ export const Room: React.FC<RoomProps> = (props) => {
           <h2 className="inline px-3 mt-0 mb-0">{props.room.name}</h2>
           <h3 className="px-3 mt-0">In: {props.room.building}</h3>
         </div>
-        <Link className="ml-auto mr-[100px]" to="/landing/manageitems">
+        {/* <Link className="ml-auto mr-[100px]" to="/landing/manageitems">
           <Button>Add Item</Button>
-        </Link>
+        </Link> */}
+        <div className="ml-auto mr-[100px]">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant={"default"} className="rounded-full">
+                Add Item
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px] xl:w-[1080px]">
+              <SheetHeader>
+                <SheetTitle className="text-primary ml-11">
+                  Add New Item
+                </SheetTitle>
+              </SheetHeader>
+              <div className="py-8">
+                <AddNewItem />
+              </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button type="submit">Checkout</Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
       <h3>Items:</h3>
       {roomItems.length > 0 ? (

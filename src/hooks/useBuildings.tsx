@@ -23,7 +23,7 @@ interface user {
   updatedAt: string;
 }
 
-interface building {
+export interface building {
   id: number;
   name: string;
   image_size: string;

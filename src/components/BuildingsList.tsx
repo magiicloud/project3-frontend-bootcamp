@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { cn } from "../lib/utils";
 import { SetStateAction } from "react";
 import {
   Dialog,
@@ -13,14 +11,12 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
 import { RoomObject } from "../pages/Buildings";
 import { buildingList } from "../hooks/useBuildings";
 import { HTMLAttributes } from "react";
-import { Button } from "./ui/button";
 import { AddBuildingUser } from "./AddBuildingUser";
 
 interface BuildingListProps extends HTMLAttributes<HTMLDivElement> {
@@ -31,8 +27,6 @@ interface BuildingListProps extends HTMLAttributes<HTMLDivElement> {
 
 export const BuildingsList: React.FC<BuildingListProps> = (props) => {
   const [buildingLineItem, setBuildingLineItem] = useState(<div></div>);
-  const [newUserEmail, setNewUserEmail] = useState("");
-
   useEffect(() => {
     const buildingLineItems: unknown = props.buildings.map(
       (building, index) => {

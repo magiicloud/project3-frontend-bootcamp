@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
-import { BACKEND_URL } from "./constants";
 
 export const useAuthenticatedRequest = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -10,7 +9,7 @@ export const useAuthenticatedRequest = () => {
       const accessToken = await getAccessTokenSilently();
       const response = await axios({
         ...options,
-        url: `${BACKEND_URL}${url}`,
+        url: `${process.env.REACT_APP_BACKEND_URL}${url}`,
         headers: {
           ...options.headers,
           Authorization: `Bearer ${accessToken}`,

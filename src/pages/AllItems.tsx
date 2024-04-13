@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "../components/ui/table";
 
-export const AllItemsOLD = () => {
+export const AllItems = () => {
   const { allItems, error: allItemsError } = useAllItems();
   if (allItemsError) return <div>Error loading items.</div>;
   if (!allItems.length) return <div>Loading items...</div>;

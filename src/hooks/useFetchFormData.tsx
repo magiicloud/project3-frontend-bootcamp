@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useUser } from "../components/UserContext";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
 
@@ -55,14 +56,18 @@ export const useAllItems = () => {
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const { userId } = useUser();
   const sendRequest = useAuthenticatedRequest();
 
   useEffect(() => {
     const fetchAllItems = async () => {
       setIsLoading(true);
       try {
-        const allItemsData = await sendRequest("/allitems/", { method: "GET" });
+        const allItemsData = await sendRequest(`/allitems/${userId}`, {
+          method: "GET",
+        });
         setAllItems(allItemsData.data);
+        console.log(allItemsData.data);
         setIsLoading(false);
       } catch (err) {
         console.error(err);

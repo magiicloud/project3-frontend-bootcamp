@@ -42,7 +42,7 @@ export const useBuildings = () => {
 
   const fetchBuildings = async () => {
     // ${userId}
-    const fetchedBuildings = await sendRequest(`/buildings/1`, {
+    const fetchedBuildings = await sendRequest(`/buildings/${userId}`, {
       method: "GET",
     });
     const fetchedBuildingsData = await fetchedBuildings.data;

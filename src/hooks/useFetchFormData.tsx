@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useUser } from "../components/UserContext";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
 
@@ -11,6 +12,7 @@ export const useRooms = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const { userId } = useUser();
   const sendRequest = useAuthenticatedRequest();
 
   useEffect(() => {
@@ -18,7 +20,9 @@ export const useRooms = () => {
 
     const fetchRooms = async () => {
       try {
-        const roomsData = await sendRequest("/allrooms/", { method: "GET" });
+        const roomsData = await sendRequest(`/allrooms/${userId}`, {
+          method: "GET",
+        });
         setRooms(roomsData.data);
         setIsLoading(false);
       } catch (err) {
@@ -55,13 +59,16 @@ export const useAllItems = () => {
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const { userId } = useUser();
   const sendRequest = useAuthenticatedRequest();
 
   useEffect(() => {
     const fetchAllItems = async () => {
       setIsLoading(true);
       try {
-        const allItemsData = await sendRequest("/allitems/", { method: "GET" });
+        const allItemsData = await sendRequest(`/allitems/${userId}`, {
+          method: "GET",
+        });
         setAllItems(allItemsData.data);
         setIsLoading(false);
       } catch (err) {

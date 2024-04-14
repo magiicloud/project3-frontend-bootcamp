@@ -63,7 +63,7 @@ export const Room: React.FC<RoomProps> = (props) => {
 
   useEffect(() => {
     fetchRoomItems();
-  }, [roomItems]);
+  }, []);
 
   const roomCards = roomItems.map((item) => <ItemCard item={item}></ItemCard>);
 

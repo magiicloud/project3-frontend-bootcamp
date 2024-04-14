@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
 import { useUser } from "../components/UserContext";
-import axios from "axios";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
 
 interface room {
@@ -23,7 +21,7 @@ interface user {
   updatedAt: string;
 }
 
-interface building {
+export interface building {
   id: number;
   name: string;
   image_size: string;
@@ -41,7 +39,6 @@ export const useBuildings = () => {
   const { userId } = useUser();
 
   const fetchBuildings = async () => {
-    // ${userId}
     const fetchedBuildings = await sendRequest(`/buildings/${userId}`, {
       method: "GET",
     });

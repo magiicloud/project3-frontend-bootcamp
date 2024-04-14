@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BatteryLowIcon,
@@ -16,11 +16,19 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
-import { buildingList, useBuildings } from "../hooks/useBuildings";
+import { building, buildingList, useBuildings } from "../hooks/useBuildings";
 import {
   generateExpItemExcel,
   generateParItemExcel,
 } from "../components/utils/generateExcel";
+import { set } from "date-fns";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "../components/ui/select";
 
 interface ExpItem {
   id: number;
@@ -50,14 +58,21 @@ export const Dashboard = () => {
   const [parCount, setParCount] = useState(0);
   const [parItems, setParItems] = useState<ParItem[]>([]);
   const [buildings, setBuildings] = useState<buildingList>([]);
+  const [currentBuilding, setCurrentBuilding] = useState<building | undefined>(
+    undefined
+  );
 
   const { fetchBuildings } = useBuildings();
 
   const getShortExp = async () => {
     try {
-      const response = await sendRequest(`/getexpiry/`, { method: "GET" });
-      setExpCount(response.data.count);
-      setExpItems(response.data.items);
+      if (currentBuilding !== undefined) {
+        const response = await sendRequest(`/getexpiry/${currentBuilding.id}`, {
+          method: "GET",
+        });
+        setExpCount(response.data.count);
+        setExpItems(response.data.items);
+      }
     } catch (error) {
       console.error("Error searching backend:", error);
     }
@@ -65,11 +80,16 @@ export const Dashboard = () => {
 
   const getBelowPar = async () => {
     try {
-      const response = await sendRequest(`/getbelowpar/`, {
-        method: "GET",
-      });
-      setParCount(response.data.count[0].count);
-      setParItems(response.data.items);
+      if (currentBuilding !== undefined) {
+        const response = await sendRequest(
+          `/getbelowpar/${currentBuilding.id}`,
+          {
+            method: "GET",
+          }
+        );
+        setParCount(response.data.count[0].count);
+        setParItems(response.data.items);
+      }
     } catch (error) {
       console.error("Error searching backend:", error);
     }
@@ -85,10 +105,13 @@ export const Dashboard = () => {
   };
 
   useEffect(() => {
-    getShortExp();
-    getBelowPar();
     getBuildings();
   }, []);
+
+  useEffect(() => {
+    getShortExp();
+    getBelowPar();
+  }, [currentBuilding]);
 
   function calculateDaysTillExpiry(expiryDate: string) {
     const currentDate = new Date();
@@ -99,18 +122,18 @@ export const Dashboard = () => {
   }
 
   const buildingContent = () => {
-    if (buildings.length > 0) {
+    if (currentBuilding !== undefined) {
       return (
         <div className="w-full flex flex-row">
           <div className="h-[150px] w-[250px] m-1 flex justify-center items-center">
             <img
               className="m-0 max-w-full max-h-full"
-              src={buildings[0].building_img_url}
+              src={currentBuilding.building_img_url}
               alt="building preview"
             />
           </div>
           <div className="flex items-center m-5">
-            <h1 className="prose m-0">Building Name: {buildings[0].name}</h1>
+            <h1 className="prose m-0">Building Name: {currentBuilding.name}</h1>
           </div>
         </div>
       );
@@ -120,6 +143,16 @@ export const Dashboard = () => {
           <h1>You do not have any active buildings</h1>
         </div>
       );
+    }
+  };
+
+  const generateNoItemsToDisplayMessage = (field: string) => {
+    if (currentBuilding === undefined) {
+      return "Please select a building to continue.";
+    } else if (field === "par") {
+      return "You have no items reaching par.";
+    } else if (field === "expiry") {
+      return "You have no expiring items.";
     }
   };
 
@@ -152,7 +185,7 @@ export const Dashboard = () => {
             <CardContent>
               <div className="text-3xl font-bold">{parCount}</div>
               <p className="text-sm text-muted-foreground">
-                Below 50% par level
+                Below 150% par level
               </p>
             </CardContent>
           </Card>
@@ -161,6 +194,22 @@ export const Dashboard = () => {
               <CardTitle className="text-md font-medium text-primary">
                 Current Building
               </CardTitle>
+              <Select
+                onValueChange={(value) =>
+                  setCurrentBuilding(buildings[Number(value)])
+                }
+              >
+                <SelectTrigger className="max-w-[170px] ml-auto mr-2 border border-gray-500 rounded-md">
+                  <SelectValue placeholder="Select Building" />
+                </SelectTrigger>
+                <SelectContent>
+                  {buildings.map((building, index) => (
+                    <SelectItem key={index} value={String(index)}>
+                      {building.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Building className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>{buildingContent()}</CardContent>
@@ -176,7 +225,7 @@ export const Dashboard = () => {
                   Items to Reorder
                 </CardTitle>
                 <CardDescription>
-                  Items with less than 50% par level
+                  Items with less than 150% par level
                 </CardDescription>
               </div>
               <Button
@@ -190,7 +239,8 @@ export const Dashboard = () => {
                 <ArrowUpRight className="h-4 w-4" />
               </Button>
             </CardHeader>
-            {parItems &&
+            {/* {parDisplay} */}
+            {parItems.length > 0 ? (
               parItems.map((item, index) => (
                 <CardContent key={index} className="grid gap-8 mb-6">
                   <div className="flex items-center gap-4">
@@ -216,7 +266,12 @@ export const Dashboard = () => {
                     </div>
                   </div>
                 </CardContent>
-              ))}
+              ))
+            ) : (
+              <CardContent>
+                {generateNoItemsToDisplayMessage("par")}
+              </CardContent>
+            )}
           </Card>
 
           <Card>
@@ -238,41 +293,44 @@ export const Dashboard = () => {
                 <ArrowUpRight className="h-4 w-4" />
               </Button>
             </CardHeader>
-            {expItems.map((item, index) => (
-              <CardContent key={item.id} className="grid gap-8 mb-6">
-                <div className="flex items-center gap-4">
-                  <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/03.png" alt="Avatar" />
-                    <AvatarFallback>{index + 1}</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1 w-full">
-                    <p className="text-sm font-medium leading-none m-0">
-                      {item.item.item_name}
-                    </p>
-                    <p className="text-sm text-muted-foreground m-0">
-                      {item.item.serial_num}
-                    </p>
-                    <div className="flex flex-1 gap-1">
-                      <Badge variant={"outline"} className="w-fit">
-                        Exp: {new Date(item.expiry_date).toLocaleDateString()}
-                      </Badge>
-                      <Badge variant={"secondary"} className="w-fit">
-                        {item.room.name}
+            {expItems.length > 0 ? (
+              expItems.map((item, index) => (
+                <CardContent key={item.id} className="grid gap-8 mb-6">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="hidden h-9 w-9 sm:flex">
+                      <AvatarImage src="/avatars/03.png" alt="Avatar" />
+                      <AvatarFallback>{index + 1}</AvatarFallback>
+                    </Avatar>
+                    <div className="grid gap-1 w-full">
+                      <p className="text-sm font-medium leading-none m-0">
+                        {item.item.item_name}
+                      </p>
+                      <p className="text-sm text-muted-foreground m-0">
+                        {item.item.serial_num}
+                      </p>
+                      <div className="flex flex-1 gap-1">
+                        <Badge variant={"outline"} className="w-fit">
+                          Exp: {new Date(item.expiry_date).toLocaleDateString()}
+                        </Badge>
+                        <Badge variant={"secondary"} className="w-fit">
+                          {item.room.name}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 text-center h-full items-center">
+                      <Badge variant={"secondary"} className="w-full py-3 px-4">
+                        {calculateDaysTillExpiry(item.expiry_date)} days till
+                        expiry
                       </Badge>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 text-center h-full items-center">
-                    <Badge variant={"secondary"} className="w-full py-3 px-4">
-                      {calculateDaysTillExpiry(item.expiry_date)} days till
-                      expiry
-                    </Badge>
-                  </div>
-                  {/* <div className="ml-auto font-medium">
-                    {new Date(item.expiry_date).toLocaleDateString()}
-                  </div> */}
-                </div>
+                </CardContent>
+              ))
+            ) : (
+              <CardContent>
+                {generateNoItemsToDisplayMessage("expiry")}
               </CardContent>
-            ))}
+            )}
           </Card>
         </div>
       </div>

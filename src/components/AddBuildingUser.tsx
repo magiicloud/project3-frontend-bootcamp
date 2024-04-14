@@ -60,7 +60,6 @@ export const AddBuildingUser: React.FC<AddNewUserProps> = (props) => {
       newUserEmail: newUserEmail,
       admin: adminStatus,
     };
-    console.log(adminStatus, newUserEmail);
     if (adminStatus !== undefined && newUserEmail.length > 0) {
       setFieldError(false);
       axios

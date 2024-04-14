@@ -45,16 +45,10 @@ interface ExpItem {
 
 interface ParItem {
   id: number;
-  room_id: number;
-  item_id: number;
-  quantity: number;
-  uom: string;
-  expiry_date: string;
-  createdAt: string;
-  updatedAt: string;
-  parPercent: number;
-  item: { par_level: number; serial_num: string; item_name: string };
-  room: { name: string };
+  itemTotal: number;
+  item_name: string;
+  par_level: number;
+  serial_num: string;
 }
 
 export const Dashboard = () => {
@@ -93,8 +87,7 @@ export const Dashboard = () => {
             method: "GET",
           }
         );
-        console.log(response);
-        setParCount(response.data.count);
+        setParCount(response.data.count[0].count);
         setParItems(response.data.items);
       }
     } catch (error) {
@@ -192,7 +185,7 @@ export const Dashboard = () => {
             <CardContent>
               <div className="text-3xl font-bold">{parCount}</div>
               <p className="text-sm text-muted-foreground">
-                Below 50% par level
+                Below 150% par level
               </p>
             </CardContent>
           </Card>
@@ -257,18 +250,18 @@ export const Dashboard = () => {
                     </Avatar>
                     <div className="grid gap-1 w-full">
                       <p className="text-sm font-medium leading-none m-0">
-                        {item.item.item_name}
+                        {item.item_name}
                       </p>
                       <p className="text-sm text-muted-foreground m-0">
-                        {item.item.serial_num}
+                        {item.serial_num}
                       </p>
                       <Badge variant={"outline"} className="w-fit">
-                        Par: {item.item.par_level}
+                        Par: {item.par_level}
                       </Badge>
                     </div>
                     <div className="grid text-center h-full items-center">
                       <Badge variant={"secondary"} className="w-full py-2 px-8">
-                        {item.quantity} left
+                        {item.itemTotal} left
                       </Badge>
                     </div>
                   </div>

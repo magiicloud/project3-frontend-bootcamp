@@ -15,16 +15,10 @@ interface ExpItem {
 
 interface ParItem {
   id: number;
-  room_id: number;
-  item_id: number;
-  quantity: number;
-  uom: string;
-  expiry_date: string;
-  createdAt: string;
-  updatedAt: string;
-  parPercent: number;
-  item: { par_level: number; serial_num: string; item_name: string };
-  room: { name: string };
+  itemTotal: number;
+  item_name: string;
+  par_level: number;
+  serial_num: string;
 }
 
 export interface AllItemsTable {
@@ -94,10 +88,10 @@ export const generateParItemExcel = async (expItems: ParItem[]) => {
 
   expItems.forEach((item) => {
     worksheet.addRow({
-      serial_num: item.item.serial_num,
-      item_name: item.item.item_name,
-      par: Number(item.item.par_level),
-      quantity: Number(item.quantity),
+      serial_num: item.serial_num,
+      item_name: item.item_name,
+      par: Number(item.par_level),
+      quantity: Number(item.itemTotal),
     });
   });
 

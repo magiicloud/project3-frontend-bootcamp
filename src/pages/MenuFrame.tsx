@@ -30,7 +30,9 @@ const Menubar = () => {
         to="dashboard"
         className={({ isActive }) =>
           `flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-            isActive ? "bg-muted text-primary" : "text-muted-foreground"
+            isActive
+              ? "bg-muted text-muted-foreground"
+              : "text-muted-foreground"
           }`
         }
       >
@@ -41,7 +43,9 @@ const Menubar = () => {
         to="allitems"
         className={({ isActive }) =>
           `flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-            isActive ? "bg-muted text-primary" : "text-muted-foreground"
+            isActive
+              ? "bg-muted text-muted-foreground"
+              : "text-muted-foreground"
           }`
         }
       >
@@ -52,7 +56,9 @@ const Menubar = () => {
         to="manageitems"
         className={({ isActive }) =>
           `flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-            isActive ? "bg-muted text-primary" : "text-muted-foreground"
+            isActive
+              ? "bg-muted text-muted-foreground"
+              : "text-muted-foreground"
           }`
         }
       >
@@ -63,7 +69,9 @@ const Menubar = () => {
         to="buildings"
         className={({ isActive }) =>
           `flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-            isActive ? "bg-muted text-primary" : "text-muted-foreground"
+            isActive
+              ? "bg-muted text-muted-foreground"
+              : "text-muted-foreground"
           }`
         }
       >
@@ -131,15 +139,17 @@ export const MenuFrame = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">
-              <CircleUser className="h-5 w-5" />
+              {user?.picture ? (
+                <img src={user.picture} className="rounded-full" />
+              ) : (
+                <CircleUser className="h-5 w-5" />
+              )}
+
               <span className="sr-only">Toggle user menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>

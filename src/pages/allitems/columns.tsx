@@ -56,6 +56,7 @@ export const columns: ColumnDef<z.infer<typeof TableSchema>>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="font-semibold"
         >
           Serial No.
           <CaretSortIcon className="ml-2 h-4 w-4" />
@@ -74,6 +75,7 @@ export const columns: ColumnDef<z.infer<typeof TableSchema>>[] = [
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="font-semibold"
           >
             Item Name
             <CaretSortIcon className="ml-2 h-4 w-4" />
@@ -92,6 +94,7 @@ export const columns: ColumnDef<z.infer<typeof TableSchema>>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="font-semibold"
         >
           Par
           <CaretSortIcon className="ml-2 h-4 w-4" />
@@ -109,6 +112,7 @@ export const columns: ColumnDef<z.infer<typeof TableSchema>>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="font-semibold"
         >
           Room
           <CaretSortIcon className="ml-2 h-4 w-4" />
@@ -126,6 +130,7 @@ export const columns: ColumnDef<z.infer<typeof TableSchema>>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="font-semibold"
         >
           Qty
           <CaretSortIcon className="ml-2 h-4 w-4" />
@@ -147,6 +152,7 @@ export const columns: ColumnDef<z.infer<typeof TableSchema>>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="font-semibold"
         >
           Exp Date
           <CaretSortIcon className="ml-2 h-4 w-4" />
@@ -177,9 +183,6 @@ export const columns: ColumnDef<z.infer<typeof TableSchema>>[] = [
             >
               Copy serial number
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Placeholder</DropdownMenuItem>
-            <DropdownMenuItem>Placeholder</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

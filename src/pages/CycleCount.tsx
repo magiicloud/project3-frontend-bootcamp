@@ -78,10 +78,10 @@ export const CycleCount = () => {
       console.log(response.data);
       form.formState.isSubmitSuccessful && form.reset();
       toast({
-        title: "You submitted the following values:",
+        title: "Added to cart",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md bg-secondary p-4">
+            <code className="text-secondary-foreground">
               {JSON.stringify(dataWithUserId, null, 2)}
             </code>
           </pre>

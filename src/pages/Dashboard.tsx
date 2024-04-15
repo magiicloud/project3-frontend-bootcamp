@@ -105,12 +105,9 @@ export const Dashboard = () => {
   };
 
   useEffect(() => {
-    getBuildings();
-  }, []);
-
-  useEffect(() => {
     getShortExp();
     getBelowPar();
+    getBuildings();
   }, [currentBuilding]);
 
   function calculateDaysTillExpiry(expiryDate: string) {
@@ -132,15 +129,22 @@ export const Dashboard = () => {
               alt="building preview"
             />
           </div>
-          <div className="flex items-center m-5">
-            <h1 className="prose m-0">Building Name: {currentBuilding.name}</h1>
+          <div className="flex flex-col place-content-center mx-auto">
+            <p className="text-muted-foreground font-light text-center text-sm">
+              You're now in
+            </p>
+            <h1 className="m-0 text-2xl font-bold text-primary text-center">
+              {currentBuilding.name}
+            </h1>
           </div>
         </div>
       );
     } else {
       return (
         <div className="h-full w-full m-1 flex justify-center items-center">
-          <h1>You do not have any active buildings</h1>
+          <p className="text-sm text-muted-foreground pt-10">
+            You do not have any active buildings
+          </p>
         </div>
       );
     }
@@ -161,29 +165,33 @@ export const Dashboard = () => {
       {/* <h2 className="px-8 mt-2 mb-0">Dashboard</h2> */}
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium text-primary">
+          <Card className="">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 mt-8">
+              <CardTitle className="text-md font-medium tracking-wide text-primary pb-1">
                 Short Expiry Items
               </CardTitle>
               <Clock4Icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{expCount}</div>
+            <CardContent className="space-y-4">
+              <div className="text-3xl font-bold text-muted-foreground">
+                {expCount}
+              </div>
               <p className="text-sm text-muted-foreground">
                 Expiry less than 6 months from today
               </p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium text-primary">
+          <Card className="">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 mt-8">
+              <CardTitle className="text-md font-medium tracking-wide text-primary pb-1">
                 Near Par Items
               </CardTitle>
               <BatteryLowIcon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{parCount}</div>
+            <CardContent className="space-y-4">
+              <div className="text-3xl font-bold text-muted-foreground">
+                {parCount}
+              </div>
               <p className="text-sm text-muted-foreground">
                 Below 150% par level
               </p>
@@ -191,15 +199,12 @@ export const Dashboard = () => {
           </Card>
           <Card className="md:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-md font-medium text-primary">
-                Current Building
-              </CardTitle>
               <Select
                 onValueChange={(value) =>
                   setCurrentBuilding(buildings[Number(value)])
                 }
               >
-                <SelectTrigger className="max-w-[170px] ml-auto mr-2 border border-gray-500 rounded-md">
+                <SelectTrigger className="max-w-[170px] ml-1 mr-2 border rounded-md">
                   <SelectValue placeholder="Select Building" />
                 </SelectTrigger>
                 <SelectContent>
@@ -221,10 +226,10 @@ export const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-top">
               <div className="grid gap-2 mb-6">
-                <CardTitle className="text-primary font-medium">
-                  Items to Reorder
+                <CardTitle className="text-primary font-medium tracking-wide">
+                  Items to Re-order
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-muted-foreground tracking-wide">
                   Items with less than 150% par level
                 </CardDescription>
               </div>
@@ -246,7 +251,9 @@ export const Dashboard = () => {
                   <div className="flex items-center gap-4">
                     <Avatar className="hidden h-9 w-9 sm:flex">
                       <AvatarImage src="/avatars/03.png" alt="Avatar" />
-                      <AvatarFallback>{index + 1}</AvatarFallback>
+                      <AvatarFallback className="bg-secondary text-secondary-foreground">
+                        {index + 1}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid gap-1 w-full">
                       <p className="text-sm font-medium leading-none m-0">
@@ -268,7 +275,7 @@ export const Dashboard = () => {
                 </CardContent>
               ))
             ) : (
-              <CardContent>
+              <CardContent className="text-sm text-muted-foreground">
                 {generateNoItemsToDisplayMessage("par")}
               </CardContent>
             )}
@@ -277,10 +284,12 @@ export const Dashboard = () => {
           <Card>
             <CardHeader className="flex flex-row items-top mb-6">
               <div className="grid gap-2">
-                <CardTitle className="text-primary font-medium">
+                <CardTitle className="text-primary font-medium tracking-wide">
                   Short Expiry
                 </CardTitle>
-                <CardDescription>Items expiring in 6 months</CardDescription>
+                <CardDescription className="text-muted-foreground tracking-wide">
+                  Items expiring in 6 months
+                </CardDescription>
               </div>
               <Button
                 size="sm"
@@ -299,7 +308,9 @@ export const Dashboard = () => {
                   <div className="flex items-center gap-4">
                     <Avatar className="hidden h-9 w-9 sm:flex">
                       <AvatarImage src="/avatars/03.png" alt="Avatar" />
-                      <AvatarFallback>{index + 1}</AvatarFallback>
+                      <AvatarFallback className="bg-secondary text-secondary-foreground">
+                        {index + 1}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid gap-1 w-full">
                       <p className="text-sm font-medium leading-none m-0">
@@ -312,7 +323,7 @@ export const Dashboard = () => {
                         <Badge variant={"outline"} className="w-fit">
                           Exp: {new Date(item.expiry_date).toLocaleDateString()}
                         </Badge>
-                        <Badge variant={"secondary"} className="w-fit">
+                        <Badge variant={"destructive"} className="w-fit">
                           {item.room.name}
                         </Badge>
                       </div>
@@ -327,7 +338,7 @@ export const Dashboard = () => {
                 </CardContent>
               ))
             ) : (
-              <CardContent>
+              <CardContent className="text-sm text-muted-foreground">
                 {generateNoItemsToDisplayMessage("expiry")}
               </CardContent>
             )}

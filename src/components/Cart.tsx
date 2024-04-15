@@ -62,10 +62,8 @@ const popupToast = (errTitle: string, descriptionJson: string) => {
   return toast({
     title: errTitle,
     description: (
-      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        <code className="text-white">
-          {JSON.stringify(descriptionJson, null, 2)}
-        </code>
+      <pre className="mt-2 w-[340px] rounded-md p-4">
+        <code>{JSON.stringify(descriptionJson, null, 2)}</code>
       </pre>
     ),
   });
@@ -82,12 +80,10 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
       const activecart = await sendRequest(`/getactivecart/${userId}`, {
         method: "GET",
       });
-      const roomlist = await sendRequest(`/allrooms/`, {
+      const roomlist = await sendRequest(`/allrooms/${userId}`, {
         method: "GET",
       });
-      console.log(activecart.data.cartLineItems);
       setCartItems(activecart.data.cartLineItems);
-      console.log(roomlist.data);
       setRooms(roomlist.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -127,8 +123,8 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
       toast({
         title: "Checkout success",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md p-4">
+            <code>
               <p>Items updated succesfully!</p>
             </code>
           </pre>
@@ -175,8 +171,8 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
       toast({
         title: "Item deleted",
         description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
+          <pre className="mt-2 w-[340px] rounded-md p-4">
+            <code>
               <p>Item deleted succesfully!</p>
             </code>
           </pre>
@@ -263,7 +259,7 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
               <ShoppingCart />
             </Button>
           </SheetTrigger>
-          <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px]">
+          <SheetContent className="w-[400px] sm:w-[540px] lg:w-[720px] overflow-scroll">
             <SheetHeader>
               <SheetTitle className="text-primary">Transactions</SheetTitle>
             </SheetHeader>

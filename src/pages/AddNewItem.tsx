@@ -110,22 +110,15 @@ export const AddNewItem = () => {
         data: formData,
       });
       console.log(response.data);
-      form.formState.isSubmitSuccessful && form.reset();
+      response.data.success === true && form.reset();
       toast({
-        title: "You submitted the following values:",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">
-              {JSON.stringify(formData, null, 2)}
-            </code>
-          </pre>
-        ),
+        title: "Item added",
       });
     } catch (error) {
       console.error("Error searching backend:", error);
     }
   };
-  // console.log(form.formState.errors);
+  console.log(form.formState);
 
   return (
     <>

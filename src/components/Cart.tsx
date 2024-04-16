@@ -122,13 +122,6 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
       });
       toast({
         title: "Checkout success",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md p-4">
-            <code>
-              <p>Items updated succesfully!</p>
-            </code>
-          </pre>
-        ),
       });
       setCartItems([]);
       setRooms([]);
@@ -169,14 +162,7 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
         data: cartLineItemId,
       });
       toast({
-        title: "Item deleted",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md p-4">
-            <code>
-              <p>Item deleted succesfully!</p>
-            </code>
-          </pre>
-        ),
+        title: "Item deleted from cart",
       });
       openCart();
     } catch (error) {

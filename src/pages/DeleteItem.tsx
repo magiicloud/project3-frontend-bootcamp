@@ -76,25 +76,14 @@ export const DeleteItem = () => {
 
     if (form.getValues("type") === "deleteroomitem") {
       try {
-        // const response = await axios.delete(`${BACKEND_URL}/deleteroomitem`, {
-        //   data: formData,
-        // });
         const response = await sendRequest(`/deleteroomitem/`, {
           method: "DELETE",
           data: formData,
         });
-        console.log(response.data);
+        response.data.success === true && form.reset();
         toast({
-          title: "You submitted the following values:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">
-                {JSON.stringify(formData, null, 2)}
-              </code>
-            </pre>
-          ),
+          title: "Item deleted",
         });
-        form.formState.isSubmitSuccessful && form.reset();
       } catch (error) {
         console.error("Error searching backend:", error);
       }
@@ -102,23 +91,13 @@ export const DeleteItem = () => {
 
     if (form.getValues("type") === "deleteall") {
       try {
-        // const response = await axios.delete(`${BACKEND_URL}/deleteitem`, {
-        //   data: formData,
-        // });
         const response = await sendRequest(`/deleteitem/`, {
           method: "DELETE",
           data: formData,
         });
-        console.log(response.data);
+        response.data.success === true && form.reset();
         toast({
-          title: "You submitted the following values:",
-          description: (
-            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">
-                {JSON.stringify(formData, null, 2)}
-              </code>
-            </pre>
-          ),
+          title: "Item deleted",
         });
         form.formState.isSubmitSuccessful && form.reset();
       } catch (error) {

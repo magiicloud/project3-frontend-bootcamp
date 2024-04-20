@@ -4,7 +4,6 @@ import {
   Building,
   CircleUser,
   Home,
-  LineChart,
   Menu,
   Package,
   ShoppingCart,

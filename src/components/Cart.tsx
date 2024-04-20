@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { BACKEND_URL } from "../constants";
-import axios, { AxiosError } from "axios";
+import React, { useState } from "react";
+import axios from "axios";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
 import { toast } from "../components/ui/use-toast";
 import { Button } from "../components/ui/button";
@@ -193,7 +192,6 @@ export const Cart: React.FC<CheckoutSuccess> = ({ onSuccessfulCheckout }) => {
       }
     }
   };
-  console.log(cartItems);
 
   const CheckoutCart = () => {
     return (

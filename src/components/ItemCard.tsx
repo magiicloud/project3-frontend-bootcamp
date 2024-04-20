@@ -1,13 +1,6 @@
 import React from "react";
-import { Item, RoomItems } from "../pages/Room";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
+import { Item } from "../pages/Room";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 
 interface ItemCardsProps {
@@ -15,7 +8,6 @@ interface ItemCardsProps {
 }
 
 export const ItemCard: React.FC<ItemCardsProps> = (props) => {
-  console.log(props.item);
   return (
     <Card className="w-[45%] m-2">
       <CardHeader className="flex flex-row justify-between items-center">

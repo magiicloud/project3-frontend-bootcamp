@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { cn } from "../lib/utils";
 import { buttonVariants } from "../components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "../components/ui/use-toast";
 import { useUser } from "../components/UserContext";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
@@ -53,12 +52,7 @@ export const Login = () => {
     }, [isAuthenticated]);
 
     return (
-      <div
-        className={cn(
-          buttonVariants({ variant: "default", size: "lg" })
-          // "absolute right-4 top-4 md:right-8 md:top-8"
-        )}
-      >
+      <div className={cn(buttonVariants({ variant: "default", size: "lg" }))}>
         <button onClick={() => loginWithRedirect()}>Login / Signup</button>
       </div>
     );

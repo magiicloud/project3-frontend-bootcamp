@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../components/UserContext";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
 
 export const useRooms = () => {

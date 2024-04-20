@@ -1,8 +1,6 @@
 import React from "react";
 import { cn } from "../lib/utils";
-import { BACKEND_URL } from "../constants";
 import { useAuthenticatedRequest } from "../authenticatedRequest";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { CalendarIcon } from "@radix-ui/react-icons";
@@ -62,23 +60,6 @@ export const AddNewItem = () => {
     },
   });
 
-  // const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
-  //   try {
-  //     const response = await axios.get(
-  //       `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
-  //     );
-  //     console.log(response.data);
-  //     form.setValue("itemName", response.data.item_name);
-  //     form.setValue("uom", response.data.roomItems[0].uom);
-  //     form.setValue(
-  //       "expiryDate",
-  //       new Date(response.data.roomItems[0].expiry_date)
-  //     );
-  //   } catch (error) {
-  //     console.error("Error searching backend:", error);
-  //   }
-  // };
-
   const sendRequest = useAuthenticatedRequest();
 
   const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
@@ -87,7 +68,6 @@ export const AddNewItem = () => {
         `/findserial/${serialNum}/${selectRoom}`,
         { method: "GET" }
       );
-      console.log(response.data);
       form.setValue("itemName", response.data.item_name);
       form.setValue("uom", response.data.roomItems[0].uom);
       form.setValue(
@@ -102,14 +82,11 @@ export const AddNewItem = () => {
   const { rooms, error: roomsError, isLoading: roomsLoading } = useRooms();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    console.log(formData);
     try {
-      // const response = await axios.post(`${BACKEND_URL}/addnewitem`, formData);
       const response = await sendRequest(`/addnewitem/`, {
         method: "POST",
         data: formData,
       });
-      console.log(response.data);
       response.data.success === true && form.reset();
       toast({
         title: "Item added",
@@ -118,11 +95,9 @@ export const AddNewItem = () => {
       console.error("Error searching backend:", error);
     }
   };
-  console.log(form.formState);
 
   return (
     <>
-      {/* <div className="prose flex flex-col p-6 max-w-full"> */}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -354,7 +329,6 @@ export const AddNewItem = () => {
           </div>
         </form>
       </Form>
-      {/* </div> */}
     </>
   );
 };

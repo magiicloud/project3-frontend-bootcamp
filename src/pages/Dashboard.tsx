@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BatteryLowIcon,
@@ -21,7 +21,6 @@ import {
   generateExpItemExcel,
   generateParItemExcel,
 } from "../components/utils/generateExcel";
-import { set } from "date-fns";
 import {
   Select,
   SelectTrigger,
@@ -100,7 +99,7 @@ export const Dashboard = () => {
       const newBuildings = await fetchBuildings();
       setBuildings(newBuildings);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -162,7 +161,6 @@ export const Dashboard = () => {
 
   return (
     <>
-      {/* <h2 className="px-8 mt-2 mb-0">Dashboard</h2> */}
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           <Card className="">
@@ -220,8 +218,6 @@ export const Dashboard = () => {
             <CardContent>{buildingContent()}</CardContent>
           </Card>
         </div>
-        {/* <div className="grid gap-4 md:gap-8 lg:grid-cols-2 2xl:grid-cols-3">
-          <Card className="2xl:col-span-2"> */}
         <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
           <Card>
             <CardHeader className="flex flex-row items-top">
@@ -307,7 +303,6 @@ export const Dashboard = () => {
                 <CardContent key={item.id} className="grid gap-8 mb-6">
                   <div className="flex items-center gap-4">
                     <Avatar className="hidden h-9 w-9 sm:flex">
-                      <AvatarImage src="/avatars/03.png" alt="Avatar" />
                       <AvatarFallback className="bg-secondary text-secondary-foreground">
                         {index + 1}
                       </AvatarFallback>

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "../components/ui/button";
-import { Link } from "react-router-dom";
-import { cn } from "../lib/utils";
-import { buttonVariants } from "../components/ui/button";
 import { RoomObject } from "./Buildings";
 import { ItemCard } from "../components/ItemCard";
 import axios from "axios";
@@ -14,7 +11,6 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
-  SheetClose,
 } from "../components/ui/sheet";
 import { AddNewItem } from "./AddNewItem";
 
@@ -51,13 +47,11 @@ export const Room: React.FC<RoomProps> = (props) => {
   const [roomItems, setRoomItems] = useState<ItemList>([]);
 
   const fetchRoomItems = async () => {
-    console.log(props.room.id);
     const fetchedRoomItems = await axios.get(
       process.env.REACT_APP_BACKEND_URL + "/items/" + props.room.id
     );
     const fetchedRoomItemsData: ItemList = await fetchedRoomItems.data;
     setRoomItems(fetchedRoomItemsData);
-    console.log(fetchedRoomItemsData);
     return undefined;
   };
 
@@ -78,9 +72,6 @@ export const Room: React.FC<RoomProps> = (props) => {
           <h2 className="inline px-3 mt-0 mb-0">{props.room.name}</h2>
           <h3 className="px-3 mt-0">In: {props.room.building}</h3>
         </div>
-        {/* <Link className="ml-auto mr-[100px]" to="/landing/manageitems">
-          <Button>Add Item</Button>
-        </Link> */}
         <div className="ml-auto mr-[100px]">
           <Sheet>
             <SheetTrigger asChild>

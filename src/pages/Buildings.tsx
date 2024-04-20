@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { cn } from "../lib/utils";
-import { buttonVariants } from "../components/ui/button";
 import { NewBuilding } from "../components/NewBuilding";
 import { BuildingsList } from "../components/BuildingsList";
 import { Room } from "./Room";
-import axios from "axios";
-import { useUser } from "../components/UserContext";
 import { buildingList, useBuildings } from "../hooks/useBuildings";
 
 export interface RoomObject {

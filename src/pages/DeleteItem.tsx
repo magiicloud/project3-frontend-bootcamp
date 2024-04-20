@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { cn } from "../lib/utils";
-import { BACKEND_URL } from "../constants";
-import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFormState } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { Calendar } from "../components/ui/calendar";
@@ -65,15 +63,8 @@ export const DeleteItem = () => {
   });
   const sendRequest = useAuthenticatedRequest();
   const { rooms, error: roomsError, isLoading: roomsLoading } = useRooms();
-  const {
-    allItems,
-    error: allItemsError,
-    isLoading: allItemsLoading,
-  } = useAllItems();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
-    console.log(formData);
-
     if (form.getValues("type") === "deleteroomitem") {
       try {
         const response = await sendRequest(`/deleteroomitem/`, {
@@ -108,14 +99,10 @@ export const DeleteItem = () => {
 
   const searchWithSerialNum = async (serialNum: string, selectRoom: number) => {
     try {
-      // const response = await axios.get(
-      //   `${BACKEND_URL}/findserial/${serialNum}/${selectRoom}`
-      // );
       const response = await sendRequest(
         `/findserial/${serialNum}/${selectRoom}`,
         { method: "GET" }
       );
-      console.log(response.data);
       form.setValue("itemName", response.data.item_name);
       form.setValue("quantity", response.data.roomItems[0].quantity);
       form.setValue(

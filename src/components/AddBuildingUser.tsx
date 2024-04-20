@@ -1,4 +1,4 @@
-import React, { HTMLAttributes, useState, useEffect } from "react";
+import React, { HTMLAttributes, useState } from "react";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -14,7 +14,7 @@ import {
   DialogDescription,
 } from "./ui/dialog";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import axios from "axios";
+import { useAuthenticatedRequest } from "../authenticatedRequest";
 
 interface AddNewUserProps extends HTMLAttributes<HTMLDivElement> {
   buildingId: number;
@@ -39,6 +39,7 @@ export const AddBuildingUser: React.FC<AddNewUserProps> = (props) => {
     undefined
   );
   const [fieldError, setFieldError] = useState<boolean>(false);
+  const sendRequest = useAuthenticatedRequest();
   const [complete, setComplete] = useState<OutcomeObject>({
     success: true,
     successMsg: "User added successfuly!",
@@ -62,13 +63,15 @@ export const AddBuildingUser: React.FC<AddNewUserProps> = (props) => {
     };
     if (adminStatus !== undefined && newUserEmail.length > 0) {
       setFieldError(false);
-      axios
-        .post(process.env.REACT_APP_BACKEND_URL + "/buildings/user", data)
+      sendRequest(process.env.REACT_APP_BACKEND_URL + "/buildings/user", {
+        method: "POST",
+        data: data,
+      })
         .then(() => {
           setCompleteDialog(true);
         })
         .catch((error) => {
-          console.log(error);
+          console.error(error);
           const completeFailed = { ...complete };
           completeFailed.success = false;
           completeFailed.errorMsg = error.response.data.msg;

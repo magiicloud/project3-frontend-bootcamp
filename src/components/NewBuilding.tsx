@@ -5,7 +5,6 @@ import React, {
   HTMLAttributes,
 } from "react";
 import { useUser } from "./UserContext";
-import { cn } from "../lib/utils";
 import RectangleSelection from "./rectangle-select";
 import { ChangeEvent } from "react";
 import {
@@ -151,7 +150,6 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
       );
       let imageWidth = 0;
       if (parentEleWidth) imageWidth = parentEleWidth - 10;
-      // const imageWidth = window.innerWidth - 200;
       newBuilding.height = (image.height * imageWidth) / image.width;
       newBuilding.width = imageWidth;
 
@@ -231,7 +229,6 @@ export const NewBuilding: React.FC<NewBuildingProps> = (props) => {
     axios
       .post(process.env.REACT_APP_BACKEND_URL + "/buildings", data)
       .then((response) => {
-        console.log(response.data);
         setCompleteDialogSuccess(true);
       })
       .catch((error) => {

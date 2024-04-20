@@ -75,7 +75,6 @@ export const CycleCount = () => {
         method: "POST",
         data: dataWithUserId,
       });
-      console.log(response.data);
       form.formState.isSubmitSuccessful && form.reset();
       toast({
         title: "Item added to cart",
@@ -99,7 +98,6 @@ export const CycleCount = () => {
         `/findserial/${serialNum}/${selectRoom}`,
         { method: "GET" }
       );
-      console.log(response.data);
       form.setValue("itemName", response.data.serial_num);
       form.setValue("quantity", response.data.roomItems[0].quantity);
       form.setValue(

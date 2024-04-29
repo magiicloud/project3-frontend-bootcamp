@@ -4,6 +4,8 @@
 
 A stock tracking app that lets you input your building layout and create rooms directly in the UI to start storing your stock. It allows you to add items to your rooms and perform cycle counts when needed. For large offices and small homes alike.
 
+Access our site at https://zesty-puppy-88afb7.netlify.app/
+
 A project by Patrick Kok and Hong Yun
 
 # User Stories
